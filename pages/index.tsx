@@ -1,11 +1,7 @@
-import type { NextPage } from 'next';
+import Home from '@/modules/Home/components/Home';
 
-const Home: NextPage = () => {
-  return (
-    <div className="flex h-full w-full items-center justify-center">
-      Template
-    </div>
-  );
+const HomePage = () => {
+  return <Home />;
 };
 
-export default Home;
+export default HomePage;
