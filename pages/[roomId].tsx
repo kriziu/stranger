@@ -1,7 +1,13 @@
+import { useRoom } from '@/common/context/storeContext';
+import JoinRoom from '@/modules/JoinRoom/components/JoinRoom';
 import Room from '@/modules/Room/components/Room';
 
 const RoomPage = () => {
-  return <Room />;
+  const room = useRoom();
+
+  if (room.id) return <Room />;
+
+  return <JoinRoom />;
 };
 
 export default RoomPage;

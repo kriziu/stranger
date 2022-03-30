@@ -6,6 +6,7 @@ export declare global {
     disconnected: (user: UserType) => void;
     user_start_type: (user: UserType) => void;
     user_stop_type: (user: UserType) => void;
+    send_check: (roomId: string) => void;
   }
 
   interface ClientToServerEvents {
@@ -13,6 +14,7 @@ export declare global {
     send_msg: (message: string) => void;
     create_new: (name: string) => void;
     join_created: (roomId: string, name: string) => void;
+    check_room: (roomId: string) => void;
     leave_room: () => void;
     leave_queue: () => void;
     start_type: () => void;

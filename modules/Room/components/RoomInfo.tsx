@@ -23,27 +23,29 @@ const RoomInfo = () => {
   return (
     <>
       <h2 className="mt-5 text-2xl font-bold text-zinc-200 sm:mt-0  md:text-3xl lg:text-4xl">
-        Custom room
+        {room.type === 'private' ? 'Private Room' : 'Custom Room'}
       </h2>
-      <div className="flex flex-col items-center sm:flex-row sm:space-x-3">
-        <h4 className="text-center text-base font-bold text-zinc-400 md:text-xl lg:text-2xl">
-          {room.id}
-        </h4>
-        <div className="relative">
-          {show && (
-            <div className="absolute bottom-full mb-2 rounded-2xl bg-black px-5 py-3">
-              Copied!
-            </div>
-          )}
+      {room.type === 'public' && (
+        <div className="flex items-center space-x-3">
+          <h4 className="text-center text-base font-bold text-zinc-400 md:text-xl lg:text-2xl">
+            {room.id}
+          </h4>
+          <div className="relative">
+            {show && (
+              <div className="absolute bottom-full mb-2 rounded-2xl bg-black px-5 py-3">
+                Copied!
+              </div>
+            )}
 
-          <button
-            className="btn btn-primary h-full px-2 py-1 text-sm"
-            onClick={() => copyToClipboard(room.id)}
-          >
-            Copy
-          </button>
+            <button
+              className="btn btn-primary h-full px-2 py-1 text-sm"
+              onClick={() => copyToClipboard(room.id)}
+            >
+              Copy
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

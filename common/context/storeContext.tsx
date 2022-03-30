@@ -8,6 +8,7 @@ import {
 } from 'react';
 
 import { useRouter } from 'next/router';
+import { useBoolean } from 'react-use';
 import io, { Socket } from 'socket.io-client';
 
 import { colors } from '../utils/colors';
@@ -61,6 +62,7 @@ const StoreProvider = ({
     useState<Socket<ServerToClientEvents, ClientToServerEvents>>(io);
   const [room, setRoom] = useState<RoomType>(defaultRoom);
   const [name, setName] = useState('');
+  const [isJoining, setIsJoining] = useBoolean(false);
 
   const router = useRouter();
 
@@ -74,6 +76,11 @@ const StoreProvider = ({
       setRoom((prev) => ({ ...prev, users: [...prev.users, user] }))
     );
 
+    socket.on('send_check', (roomId) => {
+      setIsJoining(true);
+      router.push(`/${roomId}`);
+    });
+
     socket.on('disconnected', (user) =>
       setRoom((prev) => ({
         ...prev,
@@ -84,9 +91,10 @@ const StoreProvider = ({
     return () => {
       socket.off('join_room');
       socket.off('new_connection');
+      socket.off('send_check');
       socket.off('disconnected');
     };
-  }, [room.id, router, socket]);
+  }, [room.id, router, setIsJoining, socket]);
 
   useEffect(() => {
     let i = 0;
@@ -103,24 +111,30 @@ const StoreProvider = ({
     });
 
     setRoom((prev) => ({ ...prev, colorsAssociated }));
-  }, [room.users]);
+  }, [room.users, room.id]);
 
   useEffect(() => {
     const handleRouteChange = (route: string) => {
       const roomIdURL = route.slice(1, route.length);
 
-      if (roomIdURL !== room.id) {
+      if (roomIdURL !== room.id && !isJoining) {
         socket.emit('leave_room');
         setRoom(defaultRoom);
         router.replace('/');
+
+        if (roomIdURL !== '') {
+          socket.emit('check_room', roomIdURL);
+        }
       }
+
+      setIsJoining(false);
     };
     router.events.on('routeChangeComplete', handleRouteChange);
 
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
-  }, [room.id, router, socket]);
+  }, [isJoining, room.id, router, setIsJoining, socket]);
 
   return (
     <storeContext.Provider value={{ socket, room, name, setName }}>

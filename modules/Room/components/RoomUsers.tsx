@@ -13,14 +13,18 @@ const RoomUsers = () => {
         <h3 className="-mb-1 hidden text-center text-xl font-bold md:block">
           Users in room
         </h3>
-        {room.users.map((user) => (
-          <Badge
-            color={room.colorsAssociated.get(user.id) || 'blue'}
-            key={user.id}
-          >
-            {user.name}
-          </Badge>
-        ))}
+        {room.users.map((user) => {
+          const color =
+            Array.from(room.colorsAssociated).length === 0
+              ? 'blue'
+              : room.colorsAssociated.get(user.id) || 'blue';
+
+          return (
+            <Badge color={color} key={user.id}>
+              {user.name}
+            </Badge>
+          );
+        })}
       </div>
     </div>
   );

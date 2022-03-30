@@ -24,6 +24,23 @@ let queue: Socket<
 
 let roomsCreated: string[] = [];
 
+const generateId = (
+  io: Server<
+    ClientToServerEvents,
+    ServerToClientEvents,
+    DefaultEventsMap,
+    SockedData
+  >
+): string => {
+  let id = '';
+
+  do {
+    id = Math.random().toString(36).substr(2, 5);
+  } while (io.sockets.adapter.rooms.has(id));
+
+  return id;
+};
+
 const getRoomId = (
   socket: Socket<
     ClientToServerEvents,
@@ -60,10 +77,6 @@ nextApp.prepare().then(async () => {
     SockedData
   >(server);
 
-  // app.get('/hello', async (_, res) => {
-  //   res.send('Hello World');
-  // });
-
   io.on('connection', (socket) => {
     const removeCreatedRoom = (roomId: string) => {
       if (!io.sockets.adapter.rooms.get(roomId))
@@ -79,7 +92,7 @@ nextApp.prepare().then(async () => {
       socket.data.name = name;
 
       if (queue[0] && !queue.some((user) => user.id === socket.id)) {
-        const roomId = uuidv4();
+        const roomId = generateId(io);
         console.log(roomId, 'private');
 
         const temp = [socket, queue[0]];
@@ -131,7 +144,7 @@ nextApp.prepare().then(async () => {
 
     // CREATING ROOM WITH ID
     socket.on('create_new', (name) => {
-      const roomId = uuidv4();
+      const roomId = generateId(io);
 
       console.log(roomId, 'public');
       roomsCreated = [...roomsCreated, roomId];
@@ -145,6 +158,13 @@ nextApp.prepare().then(async () => {
         users: [getUser(socket)],
         colorsAssociated: new Map(),
       });
+    });
+
+    // CHECKING IF ROOM IS PUBLIC
+    socket.on('check_room', (roomId) => {
+      if (roomsCreated.includes(roomId)) {
+        io.to(socket.id).emit('send_check', roomId);
+      }
     });
 
     // LEAVING QUEUE
