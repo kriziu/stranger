@@ -8,3 +8,17 @@ export const shuffleArray = <T>(array: T[]): T[] => {
 
   return tempArr;
 };
+
+// create function that return string representing hour and minute
+export const getTime = (): string => {
+  const date = new Date();
+
+  const hour = date.getHours();
+  const hourS = `${hour < 10 ? '0' : ''}${hour}`;
+
+  const minute = date.getMinutes();
+  const minuteS = `${minute < 10 ? '0' : ''}${minute}`;
+
+  const time = `${hourS}:${minuteS}`;
+  return time;
+};

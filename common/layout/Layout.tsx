@@ -8,11 +8,11 @@ import StoreProvider from '../context/storeContext';
 const Layout = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
   useEffect(() => {
     const handleScroll = (e: any) => {
-      if (e.target.classList.contains('on-scrollbar') === false) {
-        e.target.classList.add('on-scrollbar');
+      if (!e.target.classList?.contains('on-scrollbar')) {
+        e.target.classList?.add('on-scrollbar');
 
         setTimeout(() => {
-          e.target.classList.remove('on-scrollbar');
+          e.target.classList?.remove('on-scrollbar');
         }, 1000);
       }
     };
@@ -31,7 +31,7 @@ const Layout = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="flex h-full w-full flex-col items-center bg-zinc-900 text-white">
+      <div className="flex h-full w-full flex-col items-center">
         <h1 className="mt-3 hidden w-max self-center bg-gradient-to-r from-white to-transparent bg-clip-text text-4xl font-bold uppercase text-transparent sm:block md:text-6xl lg:text-extra">
           stranger
         </h1>

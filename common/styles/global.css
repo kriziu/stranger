@@ -89,7 +89,9 @@
 body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  @apply bg-zinc-900 text-white;
 }
+
 html {
   height: -webkit-fill-available;
 }

@@ -1,3 +1,5 @@
+import { FormEvent } from 'react';
+
 import { useRouter } from 'next/router';
 
 import { useName, useSocket } from '@/common/context/storeContext';
@@ -8,7 +10,8 @@ const JoinRoom = () => {
 
   const { roomId } = useRouter().query;
 
-  const handleConnectToRoom = () => {
+  const handleConnectToRoom = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (roomId) socket.emit('join_created', roomId.toString(), name);
   };
 
@@ -17,7 +20,10 @@ const JoinRoom = () => {
       <h3 className="mt-10 mb-3 px-5 text-center text-3xl font-bold">
         You are about to join room
       </h3>
-      <div className="flex w-48 flex-col space-y-3">
+      <form
+        className="flex w-48 flex-col space-y-3"
+        onSubmit={handleConnectToRoom}
+      >
         <input
           className="input"
           type="text"
@@ -25,10 +31,10 @@ const JoinRoom = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <button className="btn btn-primary" onClick={handleConnectToRoom}>
+        <button className="btn btn-primary" type="submit">
           Join now
         </button>
-      </div>
+      </form>
     </>
   );
 };
