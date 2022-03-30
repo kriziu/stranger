@@ -30,8 +30,8 @@ const RoomChat = () => {
   }, [messagesHandler, socket]);
 
   return (
-    <div className="h-chat  flex justify-between">
-      <span className="h-full w-px bg-zinc-600" />
+    <div className="h-chat flex justify-between">
+      <span className="hidden h-full w-px bg-zinc-600 md:block" />
       <div className="relative flex h-full w-full flex-col">
         <div
           className="h-msgs overflow-overlay absolute top-0 flex w-full flex-col space-y-4 p-5 pb-0"
@@ -46,7 +46,7 @@ const RoomChat = () => {
         </div>
         <MessageInput />
       </div>
-      <span className="h-full w-px bg-zinc-600" />
+      <span className="hidden h-full w-px bg-zinc-600 md:block" />
     </div>
   );
 };

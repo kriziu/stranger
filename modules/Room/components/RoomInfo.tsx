@@ -22,9 +22,13 @@ const RoomInfo = () => {
 
   return (
     <>
-      <h2 className="text-4xl font-bold text-zinc-200">Custom room</h2>
-      <div className="flex space-x-3">
-        <h4 className="text-2xl font-bold text-zinc-400">{room.id}</h4>
+      <h2 className="mt-5 text-2xl font-bold text-zinc-200 sm:mt-0  md:text-3xl lg:text-4xl">
+        Custom room
+      </h2>
+      <div className="flex flex-col items-center sm:flex-row sm:space-x-3">
+        <h4 className="text-center text-base font-bold text-zinc-400 md:text-xl lg:text-2xl">
+          {room.id}
+        </h4>
         <div className="relative">
           {show && (
             <div className="absolute bottom-full mb-2 rounded-2xl bg-black px-5 py-3">

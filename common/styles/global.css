@@ -62,12 +62,22 @@
     @apply rounded-full bg-zinc-800 px-5 py-2 text-lg text-white placeholder-zinc-600;
   }
 
+  .collapse__content {
+    max-height: var(--collapse-height, 0);
+  }
+
   .h-msgs {
     height: calc(100% - 4rem);
   }
 
   .h-chat {
     height: calc(100% - 6rem);
+  }
+
+  @media screen and (max-width: 1024px) {
+    .h-chat {
+      height: calc(100% - 2rem);
+    }
   }
 
   .overflow-overlay {
