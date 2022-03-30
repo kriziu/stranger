@@ -38,6 +38,17 @@ export declare global {
     id: string;
     type: 'public' | 'private';
     users: UserType[];
-    colorsAssociated: Map<string, string>;
+    colorsAssociated: Map<string, ColorType>;
   }
+
+  type ColorType =
+    | 'red'
+    | 'blue'
+    | 'green'
+    | 'yellow'
+    | 'orange'
+    | 'purple'
+    | 'pink'
+    | 'teal'
+    | 'cyan';
 }

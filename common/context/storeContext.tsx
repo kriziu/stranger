@@ -10,6 +10,9 @@ import {
 import { useRouter } from 'next/router';
 import io, { Socket } from 'socket.io-client';
 
+import { colors } from '../utils/colors';
+import { shuffleArray } from '../utils/functions';
+
 interface ContextType {
   socket: Socket<ServerToClientEvents, ClientToServerEvents>;
   room: RoomType;
@@ -40,14 +43,14 @@ export const useName = (): {
   return { name, setName };
 };
 
+const colorNames = shuffleArray([...colors.keys()]);
+
 const defaultRoom: RoomType = {
   type: 'private',
   users: [],
   id: '',
   colorsAssociated: new Map(),
 };
-
-const colors = ['red.400', 'blue.400'];
 
 const StoreProvider = ({
   children,
@@ -87,14 +90,14 @@ const StoreProvider = ({
 
   useEffect(() => {
     let i = 0;
-    const colorsAssociated = new Map<string, string>();
+    const colorsAssociated = new Map<string, ColorType>();
 
     room.users.forEach((user) => {
-      if (i === colors.length) i = 0;
+      if (i === colorNames.length) i = 0;
 
-      const temp = i % 2 === 0 ? colors.length - i : i;
+      const temp = i % 2 === 0 ? colorNames.length - i - 1 : i;
 
-      colorsAssociated.set(user.id, colors[temp] || '');
+      colorsAssociated.set(user.id, colorNames[temp]);
 
       i += 1;
     });

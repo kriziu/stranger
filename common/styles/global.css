@@ -8,6 +8,43 @@
   @apply font-montserrat font-medium transition focus:outline-none focus:ring focus:ring-violet-500;
 }
 
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+*::-webkit-scrollbar-track {
+  -webkit-box-shadow: none !important;
+  background-color: transparent;
+}
+*::-webkit-scrollbar {
+  width: 3px !important;
+  background-color: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.on-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.on-scrollbar::-webkit-scrollbar-track {
+  -webkit-box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.on-scrollbar::-webkit-scrollbar {
+  width: 6px !important;
+  position: absolute;
+  background-color: transparent;
+}
+
+.on-scrollbar::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-zinc-500/75;
+}
+
+/* COMPONENTS */
 @layer components {
   .btn {
     @apply rounded-full px-10 py-2 text-lg font-semibold;
@@ -17,8 +54,25 @@
     @apply bg-gray-50 text-black hover:bg-gray-300 active:bg-gray-50;
   }
 
+  .btn-secondary {
+    @apply bg-zinc-800  text-zinc-400 hover:bg-zinc-700 active:bg-zinc-800;
+  }
+
   .input {
     @apply rounded-full bg-zinc-800 px-5 py-2 text-lg text-white placeholder-zinc-600;
+  }
+
+  .h-msgs {
+    height: calc(100% - 4rem);
+  }
+
+  .h-chat {
+    height: calc(100% - 6rem);
+  }
+
+  .overflow-overlay {
+    overflow-y: scroll;
+    overflow-y: overlay;
   }
 }
 

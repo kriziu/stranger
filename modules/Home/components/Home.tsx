@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useBoolean, useInterval } from 'react-use';
 
-import { useSocket } from '@/common/context/storeContext';
+import { useName, useSocket } from '@/common/context/storeContext';
 
 import CreateChat from './CreateChat';
 import JoinChat from './JoinChat';
@@ -10,6 +10,8 @@ import RandomChat from './RandomChat';
 
 const Home = () => {
   const socket = useSocket();
+
+  const { name, setName } = useName();
 
   const [searching, setSearching] = useBoolean(false);
   const [dots, setDots] = useState(0);
@@ -31,7 +33,7 @@ const Home = () => {
             Waiting for other user to connect{'.'.repeat(dots)}
           </h3>
           <button
-            className="mt-3 rounded-full bg-zinc-800 px-4 py-2 text-zinc-400 hover:bg-zinc-700 active:bg-zinc-800"
+            className="btn btn-secondary mt-3 px-4 font-normal"
             onClick={handleCancelSearch}
           >
             Cancel
@@ -41,7 +43,12 @@ const Home = () => {
 
       {!searching && (
         <>
-          <input className="input mb-10 mt-5 sm:mt-0" placeholder="Name" />
+          <input
+            className="input mb-10 mt-5 sm:mt-0"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <div className="flex w-auto flex-col items-center justify-between space-y-10 sm:w-160 md:flex-row md:items-start md:space-y-0">
             <RandomChat setSearching={setSearching} />
             <span className="hidden h-96 w-px bg-zinc-600 md:block" />
