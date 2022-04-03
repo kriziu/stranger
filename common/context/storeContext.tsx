@@ -51,6 +51,7 @@ const defaultRoom: RoomType = {
   users: [],
   id: '',
   colorsAssociated: new Map(),
+  initiator: false,
 };
 
 const StoreProvider = ({
@@ -81,18 +82,19 @@ const StoreProvider = ({
       router.push(`/${roomId}`);
     });
 
-    socket.on('disconnected', (user) =>
+    const handleUserDisconnected = (user: UserType) => {
       setRoom((prev) => ({
         ...prev,
         users: prev.users.filter((arrUser) => arrUser.id !== user.id),
-      }))
-    );
+      }));
+    };
+    socket.on('disconnected', handleUserDisconnected);
 
     return () => {
       socket.off('join_room');
       socket.off('new_connection');
       socket.off('send_check');
-      socket.off('disconnected');
+      socket.off('disconnected', handleUserDisconnected);
     };
   }, [room.id, router, setIsJoining, socket]);
 

@@ -102,11 +102,18 @@ nextApp.prepare().then(async () => {
           return getUser(user);
         });
 
-        io.to(roomId).emit('join_room', {
+        const newRoom: Omit<RoomType, 'initiator'> = {
           type: 'private',
           id: roomId,
           users,
           colorsAssociated: new Map(),
+        };
+
+        temp.forEach((tempSocket) => {
+          io.to(tempSocket.id).emit('join_room', {
+            ...newRoom,
+            initiator: tempSocket.id === queue[0].id,
+          });
         });
 
         queue = [...queue.slice(1, queue.length - 1)];
@@ -139,7 +146,15 @@ nextApp.prepare().then(async () => {
         id: roomId,
         users,
         colorsAssociated: new Map(),
+        initiator: false,
       });
+    });
+
+    // CLIENT RECEIVED SIGNAL FROM GOOGLE PEER SERVER
+    socket.on('signal_received', (signal, toSocketId) => {
+      console.log('received signal to', socket.id);
+
+      io.to(toSocketId).emit('user_signal', socket.id, signal);
     });
 
     // CREATING ROOM WITH ID
@@ -157,6 +172,7 @@ nextApp.prepare().then(async () => {
         id: roomId,
         users: [getUser(socket)],
         colorsAssociated: new Map(),
+        initiator: true,
       });
     });
 

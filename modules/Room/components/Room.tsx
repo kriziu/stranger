@@ -1,7 +1,9 @@
 import { BsChevronUp } from 'react-icons/bs';
 import { useBoolean } from 'react-use';
 
-import RoomChat from './RoomChat';
+// import Chat from '@/modules/chat/components/Chat';
+import VideosContainer from '@/modules/videos/components/VideosContainer';
+
 import RoomInfo from './RoomInfo';
 import RoomUsers from './RoomUsers';
 import RoomUtilities from './RoomUtilities';
@@ -37,8 +39,11 @@ const Room = () => {
           <RoomUsers />
         </div>
 
-        <div className="flex-1 px-0 sm:px-5 md:basis-1/2 md:px-0">
-          <RoomChat />
+        <div className="h-chat flex w-full px-0 sm:px-5 md:basis-1/2 md:px-0">
+          <span className="hidden h-full w-px bg-zinc-600 md:block" />
+          {/* <Chat /> */}
+          <VideosContainer />
+          <span className="hidden h-full w-px bg-zinc-600 md:block" />
         </div>
 
         <div className="hidden basis-1/4 md:block">
