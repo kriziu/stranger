@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 import { useMap } from 'react-use';
 import Peer from 'simple-peer';
@@ -30,14 +30,17 @@ const PeersProvider = ({
   const socket = useSocket();
   const room = useRoom();
 
+  const [currentRoomId, setCurrentRoomId] = useState('');
+
   const [peers, peersHandler] = useMap<Record<string, Peer.Instance>>();
   const [streams, streamsHandler] = useMap<Record<string, MediaStream>>();
 
   useEffect(() => {
-    if (!room.id) {
+    if (currentRoomId !== room.id) {
       Object.values(peers).forEach((peer) => peer.destroy());
       peersHandler.reset();
       streamsHandler.reset();
+      setCurrentRoomId(room.id);
       return;
     }
 
@@ -56,7 +59,7 @@ const PeersProvider = ({
           peersHandler.set(user.id, peer);
         });
     });
-  }, [peers, peersHandler, room, socket.id, streamsHandler]);
+  }, [currentRoomId, peers, peersHandler, room, socket.id, streamsHandler]);
 
   useEffect(() => {
     socket.on('user_signal', (userId, signalReceived) => {

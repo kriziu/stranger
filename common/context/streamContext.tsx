@@ -2,6 +2,7 @@
 import { createContext, useEffect, useState } from 'react';
 
 import { usePeers } from './peersContext';
+import { useRoom } from './storeContext';
 import { createNewStream } from './streamContext.helpers';
 
 export const streamsContext = createContext<{
@@ -31,17 +32,27 @@ const StreamsProvider = ({
 }: {
   children: JSX.Element | JSX.Element[];
 }) => {
+  const room = useRoom();
+
   const [isScreenStreaming, setIsScreenStreaming] = useState(false);
   const [isVideoStreaming, setIsVideoStreaming] = useState(false);
   const [isAudioStreaming, setIsAudioStreaming] = useState(false);
+
+  const [currentRoomId, setCurrentRoomId] = useState('');
 
   const [myStream, setMyStream] = useState<MediaStream | null>(null);
 
   const peers = usePeers();
 
   useEffect(() => {
-    setMyStream(new MediaStream());
-  }, []);
+    if (currentRoomId !== room.id) {
+      setCurrentRoomId(room.id);
+      setMyStream(new MediaStream());
+      setIsAudioStreaming(false);
+      setIsVideoStreaming(false);
+      setIsScreenStreaming(false);
+    }
+  }, [currentRoomId, room.id]);
 
   useEffect(() => {
     Object.values(peers).forEach((peer) => {
@@ -64,6 +75,7 @@ const StreamsProvider = ({
   }, [isAudioStreaming, myStream, peers]);
 
   const handleScreenStreaming = () => {
+    if (!navigator.mediaDevices.getDisplayMedia) return;
     if (!isScreenStreaming) {
       navigator.mediaDevices
         .getDisplayMedia({ video: true })

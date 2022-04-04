@@ -35,8 +35,11 @@ const RoomUtilities = () => {
           Audio chat
         </button>
         <button
-          className={`${btnClass} ${isScreenStreaming && active}`}
+          className={`${btnClass} ${
+            isScreenStreaming && active
+          } disabled:opacity-30`}
           onClick={handleScreenStreaming}
+          disabled={!navigator.mediaDevices.getDisplayMedia}
         >
           Share screen
         </button>
