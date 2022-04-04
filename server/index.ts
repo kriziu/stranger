@@ -102,18 +102,11 @@ nextApp.prepare().then(async () => {
           return getUser(user);
         });
 
-        const newRoom: Omit<RoomType, 'initiator'> = {
+        io.to(roomId).emit('join_room', {
           type: 'private',
           id: roomId,
           users,
           colorsAssociated: new Map(),
-        };
-
-        temp.forEach((tempSocket) => {
-          io.to(tempSocket.id).emit('join_room', {
-            ...newRoom,
-            initiator: tempSocket.id === queue[0].id,
-          });
         });
 
         queue = [...queue.slice(1, queue.length - 1)];
@@ -146,7 +139,6 @@ nextApp.prepare().then(async () => {
         id: roomId,
         users,
         colorsAssociated: new Map(),
-        initiator: false,
       });
     });
 
@@ -172,7 +164,6 @@ nextApp.prepare().then(async () => {
         id: roomId,
         users: [getUser(socket)],
         colorsAssociated: new Map(),
-        initiator: true,
       });
     });
 

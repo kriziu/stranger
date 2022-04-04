@@ -34,6 +34,13 @@ const PeersProvider = ({
   const [streams, streamsHandler] = useMap<Record<string, MediaStream>>();
 
   useEffect(() => {
+    if (!room.id) {
+      Object.values(peers).forEach((peer) => peer.destroy());
+      peersHandler.reset();
+      streamsHandler.reset();
+      return;
+    }
+
     room.users.forEach((user) => {
       if (user.id === socket.id || peersHandler.get(user.id)) return;
 
@@ -41,7 +48,7 @@ const PeersProvider = ({
         .getUserMedia({ video: true, audio: true })
         .then((stream) => {
           const peer = new Peer({
-            initiator: !room.initiator,
+            initiator: true,
             trickle: false,
             stream,
           });
@@ -49,28 +56,15 @@ const PeersProvider = ({
           peersHandler.set(user.id, peer);
         });
     });
-  }, [peersHandler, room, socket.id]);
+  }, [peers, peersHandler, room, socket.id, streamsHandler]);
 
   useEffect(() => {
-    socket.on('new_connection', (user) => {
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((stream) => {
-          const peer = new Peer({
-            initiator: false,
-            trickle: false,
-            stream,
-          });
-
-          peersHandler.set(user.id, peer);
-        });
-    });
-
     socket.on('user_signal', (userId, signalReceived) => {
       peersHandler.get(userId)?.signal(signalReceived);
     });
 
     const handleUserDisconnected = (user: UserType) => {
+      peersHandler.get(user.id)?.destroy();
       peersHandler.remove(user.id);
       streamsHandler.remove(user.id);
     };
@@ -78,7 +72,6 @@ const PeersProvider = ({
 
     // eslint-disable-next-line consistent-return
     return () => {
-      socket.off('new_connection');
       socket.off('user_signal');
       socket.off('disconnected', handleUserDisconnected);
     };
@@ -109,8 +102,6 @@ const PeersProvider = ({
       });
     };
   }, [peers, peersHandler, socket, streamsHandler]);
-
-  useEffect(() => {}, [peers]);
 
   return (
     <peersContext.Provider value={{ peers, streams }}>

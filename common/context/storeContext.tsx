@@ -51,7 +51,6 @@ const defaultRoom: RoomType = {
   users: [],
   id: '',
   colorsAssociated: new Map(),
-  initiator: false,
 };
 
 const StoreProvider = ({

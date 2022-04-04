@@ -43,7 +43,6 @@ export declare global {
     type: 'public' | 'private';
     users: UserType[];
     colorsAssociated: Map<string, ColorType>;
-    initiator: boolean;
   }
 
   type ColorType =

@@ -14,6 +14,7 @@ const Room = () => {
   return (
     <div className="flex w-full flex-1 flex-col items-center">
       <RoomInfo />
+
       {/* TOP ON MOBILES */}
       <div className=" flex w-full flex-col space-y-5 px-5 sm:px-14 md:hidden">
         <div
@@ -34,12 +35,12 @@ const Room = () => {
         </button>
       </div>
 
-      <div className="mt-2 flex w-full grow flex-col md:mt-16 md:flex-row">
+      <div className="mt-2 flex w-full grow flex-col md:flex-row 2xl:mt-16">
         <div className="hidden basis-1/4 md:block">
           <RoomUsers />
         </div>
 
-        <div className="h-chat flex w-full px-0 sm:px-5 md:basis-1/2 md:px-0">
+        <div className="h-chat relative flex w-full justify-between px-0 sm:px-5 md:basis-1/2 md:px-0">
           <span className="hidden h-full w-px bg-zinc-600 md:block" />
           {/* <Chat /> */}
           <VideosContainer />
