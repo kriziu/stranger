@@ -66,10 +66,12 @@ const Layout = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <h1 className="mt-3 hidden w-max self-center bg-gradient-to-r from-white to-transparent bg-clip-text text-3xl font-bold uppercase text-transparent sm:block md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-extra">
-              stranger
-            </h1>
-            {children}
+            <>
+              <h1 className="mt-3 hidden w-max self-center bg-gradient-to-r from-white to-transparent bg-clip-text text-3xl font-bold uppercase text-transparent sm:block md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-extra">
+                stranger
+              </h1>
+              {children}
+            </>
           </motion.div>
         </StreamsProvider>
       </PeersProvider>

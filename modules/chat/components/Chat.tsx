@@ -7,7 +7,7 @@ import { useSocket } from '@/common/context/storeContext';
 import Message from './Message';
 import MessageInput from './MessageInput';
 
-const Chat = () => {
+const Chat = ({ active }: { active: boolean }) => {
   const socket = useSocket();
 
   const [messages, messagesHandler] = useList<MessageType>();
@@ -30,7 +30,11 @@ const Chat = () => {
   }, [messagesHandler, socket]);
 
   return (
-    <div className="flex h-full flex-1 justify-between">
+    <div
+      className={`flex h-full flex-1 justify-between ${
+        active ? 'block' : 'hidden'
+      }`}
+    >
       <div className="relative flex h-full w-full flex-col">
         <div
           className="h-msgs overflow-overlay absolute top-0 flex w-full flex-col space-y-4 p-5 pb-0"

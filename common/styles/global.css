@@ -92,6 +92,11 @@ body {
   @apply bg-zinc-900 text-white;
 }
 
+/* OPERA POPOUT BUTTON */
+#detach-button-host {
+  display: none !important;
+}
+
 html {
   height: -webkit-fill-available;
 }
