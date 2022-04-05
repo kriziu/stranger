@@ -1,65 +1,84 @@
+import { useEffect, useState } from 'react';
+
+import { motion } from 'framer-motion';
 import { BsChevronUp } from 'react-icons/bs';
-import { useBoolean } from 'react-use';
+import { FaVideo } from 'react-icons/fa';
+import { useBoolean, useMedia } from 'react-use';
 
 import Chat from '@/modules/chat/components/Chat';
 import VideosContainer from '@/modules/videos/components/VideosContainer';
 
 import RoomInfo from './RoomInfo';
-import RoomUsers from './RoomUsers';
 import RoomUtilities from './RoomUtilities';
 
 const Room = () => {
   const [opened, setOpened] = useBoolean(false);
+  const [videosOpened, setVideosOpened] = useBoolean(false);
 
-  const [showChat, setShowChat] = useBoolean(true);
+  const [topAnimations, setTopAnimations] = useState({});
+  const [videosAnimations, setVideosAnimations] = useState({});
+
+  const isVerySmall = useMedia('(max-width: 640px)');
+
+  useEffect(() => {
+    if (!isVerySmall) {
+      setVideosAnimations({ maxHeight: '100%' });
+      setTopAnimations({ height: 'auto' });
+    } else {
+      setVideosAnimations(
+        videosOpened ? { maxHeight: '50%' } : { maxHeight: 0 }
+      );
+      setTopAnimations(opened ? { height: 'auto' } : { height: 0 });
+    }
+  }, [isVerySmall, opened, videosOpened]);
 
   return (
     <div className="flex w-full flex-1 flex-col items-center">
       <RoomInfo />
 
       {/* TOP ON MOBILES */}
-      <div className="flex w-full flex-col space-y-5 px-5 sm:px-14 md:hidden">
-        <div
-          className={`${
-            opened ? 'mt-3 max-h-[25rem]' : 'max-h-0'
-          } flex flex-col space-y-5 overflow-hidden transition-all `}
+      <div className="flex w-full flex-col space-y-5 px-5 sm:px-14 lg:hidden">
+        <motion.div
+          className="flex flex-col space-y-5 overflow-hidden pb-2 transition-none"
+          animate={topAnimations}
         >
-          <RoomUsers />
           <RoomUtilities />
-        </div>
-        <button
-          className={`btn btn-primary w-max ${
-            !opened && 'rotate-180'
-          } self-center p-2`}
+        </motion.div>
+        <motion.button
+          className="btn btn-primary block w-max self-center p-2 transition-none sm:hidden"
           onClick={() => setOpened(!opened)}
+          animate={opened ? { rotate: 0 } : { rotate: 180 }}
         >
           <BsChevronUp />
-        </button>
+        </motion.button>
       </div>
 
       <div className="mt-2 flex w-full grow flex-col md:flex-row 2xl:mt-16">
-        <div className="hidden basis-1/4 md:block">
-          <RoomUsers />
+        <div className="hidden px-7 lg:block 2xl:px-14">
+          <RoomUtilities />
         </div>
 
-        <div className="h-chat relative flex w-full justify-between  px-0 sm:px-5 md:basis-1/2 md:px-0">
+        <div className="h-chat relative flex w-full flex-col-reverse justify-between px-0 sm:pr-5 md:flex-row xl:pr-10 2xl:pr-20">
+          <span className="hidden h-full w-px bg-zinc-600 lg:block" />
+
+          <div className=" flex-1">
+            <Chat />
+          </div>
+
           <button
-            className="btn btn-primary absolute right-0 bottom-full m-1 mr-5 bg-green-400 px-2 py-1 text-base transition-none hover:bg-green-500 active:bg-green-400 md:mr-1"
-            onClick={() => setShowChat(!showChat)}
+            className="btn btn-primary absolute right-5 bottom-full m-2 w-min p-2 sm:hidden"
+            onClick={() => setVideosOpened(!videosOpened)}
           >
-            Toggle view
+            <FaVideo />
           </button>
 
-          <span className="hidden h-full w-px bg-zinc-600 md:block" />
-
-          <Chat active={showChat} />
-          <VideosContainer active={!showChat} />
-
-          <span className="hidden h-full w-px bg-zinc-600 md:block" />
-        </div>
-
-        <div className="hidden basis-1/4 md:block">
-          <RoomUtilities />
+          <motion.div
+            className="relative flex-1 transition-none"
+            animate={videosAnimations}
+            transition={{ type: 'just' }}
+          >
+            <VideosContainer />
+          </motion.div>
         </div>
       </div>
     </div>

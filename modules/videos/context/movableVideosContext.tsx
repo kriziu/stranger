@@ -3,6 +3,8 @@ import { createContext, useContext, useEffect } from 'react';
 
 import { useList } from 'react-use';
 
+import { useRoomChange } from '@/common/context/storeContext';
+
 import MovableVideo from '../components/MovableVideo';
 
 export const movableVideosContext = createContext<{
@@ -28,6 +30,10 @@ const MovableVideosProvider = ({
   children: JSX.Element[] | JSX.Element;
 }) => {
   const [movableVideos, movableVideosHandler] = useList<MediaStream>();
+
+  useRoomChange(() => {
+    movableVideosHandler.reset();
+  });
 
   useEffect(() => {
     movableVideos.forEach((stream) => {

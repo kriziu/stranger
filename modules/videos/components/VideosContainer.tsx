@@ -4,7 +4,7 @@ import { useMyStream } from '@/common/context/streamContext.hooks';
 import { useMovableVideos } from '../context/movableVideosContext';
 import CustomVideo from './CustomVideo';
 
-const VideosContainer = ({ active }: { active: boolean }) => {
+const VideosContainer = () => {
   const myStream = useMyStream();
   const streams = useStreams();
 
@@ -12,18 +12,18 @@ const VideosContainer = ({ active }: { active: boolean }) => {
 
   if (!myStream) return null;
 
+  const stream = myStream;
+
   return (
     <div
-      className={`absolute top-0 left-0 grid h-full w-full grid-cols-3 grid-rows-3 gap-1 p-1 ${
-        active ? 'pointer-events-auto visible' : 'pointer-events-none invisible'
-      }`}
+      className={`absolute top-0 left-0 grid h-full w-full grid-cols-3 grid-rows-3 gap-1 p-1`}
     >
-      {[myStream, ...Object.values(streams)].map((stream) => {
+      {[...Array(9).keys()].map((i) => {
         const isMovable = isAlreadyMovable(stream);
 
         return (
           <div
-            key={stream.id}
+            key={i}
             className="relative h-full w-full overflow-hidden rounded-xl"
           >
             {isMovable && (

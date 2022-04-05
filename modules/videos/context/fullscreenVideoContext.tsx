@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from 'react';
 
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { useRoomChange } from '@/common/context/storeContext';
 import { useMyStream } from '@/common/context/streamContext.hooks';
 
 import CustomVideo from '../components/CustomVideo';
@@ -30,6 +31,8 @@ const FullscreenVideoProvider = ({
   );
 
   const myStream = useMyStream();
+
+  useRoomChange(() => setFullscreenStream(null));
 
   const setFullscreenVideo = (stream: MediaStream) => {
     setFullscreenStream(stream);

@@ -17,9 +17,8 @@ const RoomUtilities = () => {
 
   return (
     <div>
-      <h3 className="-mb-2 block text-xl font-bold md:hidden">Utilities</h3>
-      <div className="flex flex-1 flex-wrap items-center justify-center space-y-3 space-x-2 sm:flex-nowrap md:flex-col">
-        <h3 className="-mb-2 hidden text-center text-xl font-bold md:block">
+      <div className="flex flex-1 flex-wrap items-center justify-center space-y-3 space-x-2 sm:flex-nowrap lg:flex-col">
+        <h3 className="-mb-2 hidden text-center text-xl font-bold lg:block">
           Utilities
         </h3>
         <button
