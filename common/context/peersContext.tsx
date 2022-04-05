@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 import { useMap } from 'react-use';
 import Peer from 'simple-peer';
@@ -12,7 +12,8 @@ import {
 export const peersContext = createContext<{
   peers: Record<string, Peer.Instance>;
   streams: Record<string, MediaStream>;
-}>({ peers: {}, streams: {} });
+  connectedAll: boolean;
+}>({ peers: {}, streams: {}, connectedAll: false });
 
 export const usePeers = () => {
   const { peers } = useContext(peersContext);
@@ -26,6 +27,12 @@ export const useStreams = () => {
   return streams;
 };
 
+export const useCheckConnectedAll = () => {
+  const { connectedAll } = useContext(peersContext);
+
+  return connectedAll;
+};
+
 const PeersProvider = ({
   children,
 }: {
@@ -37,11 +44,27 @@ const PeersProvider = ({
   const [peers, peersHandler] = useMap<Record<string, Peer.Instance>>();
   const [streams, streamsHandler] = useMap<Record<string, MediaStream>>();
 
+  const [peersConnected, setPeersConnected] = useState(0);
+  const [connectedAll, setConnectedAll] = useState(false);
+
   useRoomChange(() => {
     Object.values(peers).forEach((peer) => peer.destroy());
     peersHandler.reset();
     streamsHandler.reset();
+    setConnectedAll(false);
+    setPeersConnected(0);
   });
+
+  useEffect(() => {
+    if (connectedAll || Object.keys(peers).length === 0) return;
+
+    console.log(peersConnected);
+
+    if (peersConnected === Object.keys(peers).length) {
+      console.log('siuuu');
+      setConnectedAll(true);
+    }
+  }, [connectedAll, peers, peersConnected]);
 
   useEffect(() => {
     room.users.forEach((user) => {
@@ -85,6 +108,7 @@ const PeersProvider = ({
 
     Object.keys(peers).forEach((userId) => {
       peersHandler.get(userId).on('stream', (stream) => {
+        setPeersConnected((prev) => prev + 1);
         streamsHandler.set(userId, stream);
       });
 
@@ -94,6 +118,7 @@ const PeersProvider = ({
 
       let sent = false;
       peersHandler.get(userId).on('signal', (signal) => {
+        console.log('signal to send');
         if (sent) return;
         sent = true;
 
@@ -111,7 +136,7 @@ const PeersProvider = ({
   }, [peers, peersHandler, socket, streamsHandler]);
 
   return (
-    <peersContext.Provider value={{ peers, streams }}>
+    <peersContext.Provider value={{ peers, streams, connectedAll }}>
       {children}
     </peersContext.Provider>
   );

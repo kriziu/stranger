@@ -66,8 +66,8 @@ const StreamsProvider = ({
         else audioTrackClone.enabled = false;
         peer.replaceTrack(stream.getAudioTracks()[0], audioTrackClone, stream);
 
-        console.log(peer);
-        console.log(peer.connected);
+        // console.log(peer);
+        // console.log(peer.connected);
 
         // if (!peer.connected) connected = false;
       }
