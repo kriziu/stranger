@@ -8,7 +8,7 @@ import { Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { v4 as uuidv4 } from 'uuid';
 
-import {} from '../common/global';
+import {} from '../common/types/global';
 
 const port = parseInt(process.env.PORT || '3000', 10);
 const dev = process.env.NODE_ENV !== 'production';

@@ -44,6 +44,19 @@ export const useName = (): {
   return { name, setName };
 };
 
+export const useRoomChange = (callback: () => void) => {
+  const room = useRoom();
+
+  const [roomId, setRoomId] = useState('');
+
+  useEffect(() => {
+    if (roomId !== room.id) {
+      setRoomId(room.id);
+      callback();
+    }
+  }, [room.id, roomId, callback]);
+};
+
 const colorNames = shuffleArray([...colors.keys()]);
 
 const defaultRoom: RoomType = {
