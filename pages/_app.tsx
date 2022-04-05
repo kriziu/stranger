@@ -14,4 +14,4 @@ const App = ({ Component, pageProps }: AppProps) => {
 export default App;
 
 // TODO:
-// 8. poczekac az sie polaczysz do pokoju
+// 1. regiony, wysylac zdjecie, jak sie klika na telefonie to przypadkiem klika sie przycisk "ukryty"

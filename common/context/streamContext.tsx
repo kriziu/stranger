@@ -55,18 +55,24 @@ const StreamsProvider = ({
       const stream = (peer as any).streams[0] as MediaStream;
 
       if (myStream && stream) {
-        peer.replaceTrack(
-          stream.getVideoTracks()[0],
-          myStream.getVideoTracks()[0],
-          stream
-        );
+        if (peer.connected) {
+          peer.replaceTrack(
+            stream.getVideoTracks()[0],
+            myStream.getVideoTracks()[0],
+            stream
+          );
 
-        const audioTrackClone = stream.clone().getAudioTracks()[0];
-        if (isAudioStreaming) audioTrackClone.enabled = true;
-        else audioTrackClone.enabled = false;
+          const audioTrackClone = stream.clone().getAudioTracks()[0];
+          if (isAudioStreaming) audioTrackClone.enabled = true;
+          else audioTrackClone.enabled = false;
 
-        peer.replaceTrack(stream.getAudioTracks()[0], audioTrackClone, stream);
-
+          peer.replaceTrack(
+            stream.getAudioTracks()[0],
+            audioTrackClone,
+            stream
+          );
+        }
+        console.log(peer);
         console.log(peer.connected);
 
         // if (!peer.connected) connected = false;
