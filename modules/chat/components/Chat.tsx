@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import { useList } from 'react-use';
 
-import { useSocket } from '@/common/context/storeContext';
+import { useSocket } from '@/common/context/roomContext';
 
 import Message from './Message';
 import MessageInput from './MessageInput';

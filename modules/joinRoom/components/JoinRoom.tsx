@@ -2,7 +2,7 @@ import { FormEvent } from 'react';
 
 import { useRouter } from 'next/router';
 
-import { useName, useSocket } from '@/common/context/storeContext';
+import { useName, useSocket } from '@/common/context/roomContext';
 
 const JoinRoom = () => {
   const { name, setName } = useName();

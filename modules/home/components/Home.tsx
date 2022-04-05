@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useBoolean, useInterval } from 'react-use';
 
-import { useName, useSocket } from '@/common/context/storeContext';
+import { useName, useSocket } from '@/common/context/roomContext';
 
 import CreateChat from './CreateChat';
 import JoinChat from './JoinChat';

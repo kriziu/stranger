@@ -136,7 +136,7 @@ const StoreProvider = ({
         setRoom(defaultRoom);
         router.replace('/');
 
-        if (roomIdURL !== '') {
+        if (roomIdURL) {
           socket.emit('check_room', roomIdURL);
         }
       }
@@ -149,6 +149,17 @@ const StoreProvider = ({
       router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [isJoining, room.id, router, setIsJoining, socket]);
+
+  useEffect(() => {
+    const roomIdURL = router.asPath.slice(1, router.asPath.length);
+
+    if (roomIdURL) {
+      socket.emit('check_room', roomIdURL);
+      router.replace('/');
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <storeContext.Provider value={{ socket, room, name, setName }}>

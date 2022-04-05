@@ -7,7 +7,7 @@ import {
   useRoom,
   useRoomChange,
   useSocket,
-} from '@/common/context/storeContext';
+} from '@/common/context/roomContext';
 
 export const peersContext = createContext<{
   peers: Record<string, Peer.Instance>;
@@ -86,6 +86,10 @@ const PeersProvider = ({
     Object.keys(peers).forEach((userId) => {
       peersHandler.get(userId).on('stream', (stream) => {
         streamsHandler.set(userId, stream);
+      });
+
+      peersHandler.get(userId).on('error', (err) => {
+        console.log(err, 'err');
       });
 
       let sent = false;

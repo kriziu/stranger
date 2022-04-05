@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useCopyToClipboard } from 'react-use';
 
-import { useRoom } from '@/common/context/storeContext';
+import { useRoom } from '@/common/context/roomContext';
 
 const RoomInfo = () => {
   const room = useRoom();

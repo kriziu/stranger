@@ -1,4 +1,4 @@
-import { useName, useSocket } from '@/common/context/storeContext';
+import { useName, useSocket } from '@/common/context/roomContext';
 
 const RandomChat = ({
   setSearching,

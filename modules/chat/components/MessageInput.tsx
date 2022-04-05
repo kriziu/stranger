@@ -2,7 +2,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 import { useList } from 'react-use';
 
-import { useSocket } from '@/common/context/storeContext';
+import { useSocket } from '@/common/context/roomContext';
 
 let typed = false;
 

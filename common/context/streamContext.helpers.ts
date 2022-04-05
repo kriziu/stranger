@@ -4,14 +4,17 @@ export const createNewStream = (
 ) => {
   if (!oldStream) return newStream;
 
-  const trackToAdd = oldStream.getAudioTracks()[0];
+  const trackToAdd = newStream.getVideoTracks()[0];
 
   if (trackToAdd) {
-    newStream.addTrack(trackToAdd);
-    oldStream.removeTrack(trackToAdd);
+    oldStream.getTracks().forEach((track) => track.stop());
+    if (oldStream.getVideoTracks()[0])
+      oldStream.removeTrack(oldStream.getVideoTracks()[0]);
+    oldStream.addTrack(trackToAdd);
+  } else {
+    oldStream.getTracks().forEach((track) => track.stop());
+    oldStream.removeTrack(oldStream.getVideoTracks()[0]);
   }
 
-  oldStream.getTracks().forEach((track) => track.stop());
-
-  return newStream;
+  return oldStream;
 };

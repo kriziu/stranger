@@ -8,7 +8,7 @@ import FullscreenVideoProvider from '@/modules/videos/context/fullscreenVideoCon
 import MovableVideosProvider from '@/modules/videos/context/movableVideosContext';
 
 import PeersProvider from '../context/peersContext';
-import StoreProvider from '../context/storeContext';
+import StoreProvider from '../context/roomContext';
 import StreamsProvider from '../context/streamContext';
 
 const Layout = ({ children }: { children: JSX.Element | JSX.Element[] }) => {

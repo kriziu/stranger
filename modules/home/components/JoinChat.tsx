@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 
-import { useName, useSocket } from '@/common/context/storeContext';
+import { useName, useSocket } from '@/common/context/roomContext';
 
 const JoinChat = () => {
   const socket = useSocket();

@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { colors } from '@/common/utils/colors';
 
 interface Props {
@@ -6,7 +8,7 @@ interface Props {
 }
 
 const Badge = ({ color, children }: Props) => {
-  const bgColor = colors.get(color) || 'bg-gray-400';
+  const bgColor = useMemo(() => colors.get(color) || 'bg-gray-400', [color]);
 
   return (
     <div

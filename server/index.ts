@@ -169,6 +169,7 @@ nextApp.prepare().then(async () => {
 
     // CHECKING IF ROOM IS PUBLIC
     socket.on('check_room', (roomId) => {
+      console.log(roomId, 'check');
       if (roomsCreated.includes(roomId)) {
         io.to(socket.id).emit('send_check', roomId);
       }

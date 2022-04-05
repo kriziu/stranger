@@ -1,4 +1,4 @@
-import { useRoom } from '@/common/context/storeContext';
+import { useRoom } from '@/common/context/roomContext';
 import JoinRoom from '@/modules/joinRoom/components/JoinRoom';
 import Room from '@/modules/room/components/Room';
 

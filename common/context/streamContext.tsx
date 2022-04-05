@@ -2,7 +2,7 @@
 import { createContext, useEffect, useState } from 'react';
 
 import { usePeers } from './peersContext';
-import { useRoom } from './storeContext';
+import { useRoomChange } from './roomContext';
 import { createNewStream } from './streamContext.helpers';
 
 export const streamsContext = createContext<{
@@ -32,27 +32,20 @@ const StreamsProvider = ({
 }: {
   children: JSX.Element | JSX.Element[];
 }) => {
-  const room = useRoom();
-
   const [isScreenStreaming, setIsScreenStreaming] = useState(false);
   const [isVideoStreaming, setIsVideoStreaming] = useState(false);
   const [isAudioStreaming, setIsAudioStreaming] = useState(false);
-
-  const [currentRoomId, setCurrentRoomId] = useState('');
 
   const [myStream, setMyStream] = useState<MediaStream | null>(null);
 
   const peers = usePeers();
 
-  useEffect(() => {
-    if (currentRoomId !== room.id) {
-      setCurrentRoomId(room.id);
-      setMyStream(new MediaStream());
-      setIsAudioStreaming(false);
-      setIsVideoStreaming(false);
-      setIsScreenStreaming(false);
-    }
-  }, [currentRoomId, room.id]);
+  useRoomChange(() => {
+    setMyStream(new MediaStream());
+    setIsAudioStreaming(false);
+    setIsVideoStreaming(false);
+    setIsScreenStreaming(false);
+  });
 
   useEffect(() => {
     Object.values(peers).forEach((peer) => {
@@ -72,7 +65,7 @@ const StreamsProvider = ({
         peer.replaceTrack(stream.getAudioTracks()[0], audioTrackClone, stream);
       }
     });
-  }, [isAudioStreaming, myStream, peers]);
+  }, [isAudioStreaming, isScreenStreaming, isVideoStreaming, myStream, peers]);
 
   const handleScreenStreaming = () => {
     if (!navigator.mediaDevices.getDisplayMedia) return;
@@ -80,9 +73,6 @@ const StreamsProvider = ({
       navigator.mediaDevices
         .getDisplayMedia({ video: true })
         .then((newStream) => {
-          setIsScreenStreaming(true);
-          setIsVideoStreaming(false);
-
           const createdStream = createNewStream(myStream, newStream);
 
           setMyStream(createdStream);
@@ -91,12 +81,15 @@ const StreamsProvider = ({
             setIsScreenStreaming(false);
             setMyStream(createNewStream(createdStream));
           });
+
+          setIsScreenStreaming(true);
+          setIsVideoStreaming(false);
         })
         .catch((err) => console.log(err));
     } else {
-      setIsScreenStreaming(false);
-
       setMyStream(createNewStream(myStream));
+
+      setIsScreenStreaming(false);
     }
   };
 
@@ -105,22 +98,20 @@ const StreamsProvider = ({
       navigator.mediaDevices
         .getUserMedia({ video: true })
         .then((newStream) => {
+          setMyStream(createNewStream(myStream, newStream));
+
           setIsVideoStreaming(true);
           setIsScreenStreaming(false);
-
-          setMyStream(createNewStream(myStream, newStream));
         })
         .catch((err) => console.log(err));
     } else {
-      setIsVideoStreaming(false);
-
       setMyStream(createNewStream(myStream));
+
+      setIsVideoStreaming(false);
     }
   };
 
-  const handleAudioStreaming = () => {
-    setIsAudioStreaming(!isAudioStreaming);
-  };
+  const handleAudioStreaming = () => setIsAudioStreaming(!isAudioStreaming);
 
   return (
     <streamsContext.Provider

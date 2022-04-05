@@ -12,24 +12,22 @@ const VideosContainer = () => {
 
   if (!myStream) return null;
 
-  const stream = myStream;
-
   return (
     <div
-      className={`absolute top-0 left-0 grid h-full w-full grid-cols-3 grid-rows-3 gap-1 p-1`}
+      className={`absolute top-0 left-0 grid h-full w-full grid-cols-3 grid-rows-3 gap-1 p-1 pb-0`}
     >
-      {[...Array(9).keys()].map((i) => {
+      {[myStream, ...Object.values(streams)].map((stream) => {
         const isMovable = isAlreadyMovable(stream);
 
         return (
           <div
-            key={i}
-            className="relative h-full w-full overflow-hidden rounded-xl"
+            key={stream.id}
+            className="group relative h-full w-full overflow-hidden rounded-xl"
           >
             {isMovable && (
               <div className="flex h-full w-full items-center justify-center bg-black">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-primary py-1 px-2 text-xs sm:text-lg 2xl:py-2 2xl:px-5"
                   onClick={() => removeMovableVideo(stream)}
                 >
                   Reset

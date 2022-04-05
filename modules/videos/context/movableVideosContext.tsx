@@ -1,9 +1,9 @@
 /* eslint-disable import/no-cycle */
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext } from 'react';
 
 import { useList } from 'react-use';
 
-import { useRoomChange } from '@/common/context/storeContext';
+import { useRoomChange } from '@/common/context/roomContext';
 
 import MovableVideo from '../components/MovableVideo';
 
@@ -34,20 +34,6 @@ const MovableVideosProvider = ({
   useRoomChange(() => {
     movableVideosHandler.reset();
   });
-
-  useEffect(() => {
-    movableVideos.forEach((stream) => {
-      // ZROBIC INTERVAL
-      if (
-        stream.getVideoTracks()[0].readyState === 'ended' ||
-        stream.getVideoTracks()[0].muted
-      ) {
-        const tempIndex = movableVideos.indexOf(stream);
-
-        if (tempIndex > -1) movableVideosHandler.removeAt(tempIndex);
-      }
-    });
-  }, [movableVideos, movableVideosHandler]);
 
   const isAlreadyMovable = (stream: MediaStream) =>
     movableVideos.some((arrStream) => arrStream === stream);

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import Badge from '@/common/components/Badge/Badge';
-import { useRoom, useSocket } from '@/common/context/storeContext';
+import { useRoom, useSocket } from '@/common/context/roomContext';
 import { getTime } from '@/common/utils/functions';
 
 const Message = ({ author, message }: MessageType) => {

@@ -13,12 +13,16 @@ import RoomUtilities from './RoomUtilities';
 
 const Room = () => {
   const [opened, setOpened] = useBoolean(false);
-  const [videosOpened, setVideosOpened] = useBoolean(false);
+  const [videosOpened, setVideosOpened] = useBoolean(true);
 
   const [topAnimations, setTopAnimations] = useState({});
   const [videosAnimations, setVideosAnimations] = useState({});
 
   const isVerySmall = useMedia('(max-width: 640px)');
+
+  useEffect(() => {
+    setVideosOpened(false);
+  }, [setVideosOpened]);
 
   useEffect(() => {
     if (!isVerySmall) {
