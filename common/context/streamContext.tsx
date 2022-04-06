@@ -54,7 +54,7 @@ const StreamsProvider = ({
     Object.values(peers).forEach((peer) => {
       const stream = (peer as any).streams[0] as MediaStream;
 
-      if (myStream && stream) {
+      if (myStream && stream && !peer.destroyed) {
         peer.replaceTrack(
           stream.getVideoTracks()[0],
           myStream.getVideoTracks()[0],

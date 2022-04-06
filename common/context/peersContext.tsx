@@ -46,64 +46,46 @@ const PeersProvider = ({
 
   const lastUsersLength = useRef(0);
 
-  console.log('peers', peers);
-
   useRoomChange(() => {
     Object.values(peers).forEach((peer) => peer.destroy());
     peersHandler.reset();
     streamsHandler.reset();
   });
 
+  console.log(peers);
+
   const setupPeer = useCallback(
     (peer: Peer.Instance, userId: string) => {
-      console.log('setup');
+      console.log('setup ', userId);
       peersHandler.set(userId, peer);
 
       peer.on('stream', (stream) => {
-        console.log('streaming ', userId);
         streamsHandler.set(userId, stream);
       });
 
       peer.on('error', (err) => {
-        console.log(err, 'err');
+        console.log(err, 'err, destroying');
+        console.log(peers[userId]);
+      });
+
+      peer.on('close', () => {
+        console.log('close');
+        console.log(peers[userId]);
       });
 
       let sent = false;
       peer.on('signal', (signal) => {
+        console.log('signal to', userId);
         if (sent) return;
         sent = true;
 
         socket.emit('signal_received', signal, userId);
       });
     },
-    [peersHandler, socket, streamsHandler]
+    [peers, peersHandler, socket, streamsHandler]
   );
 
-  useInterval(() => {
-    Object.keys(peers).forEach((userId) => {
-      if (!peers[userId].connected) {
-        peers[userId].destroy();
-        peersHandler.remove(userId);
-        streamsHandler.remove(userId);
-
-        navigator.mediaDevices
-          .getUserMedia({ video: true, audio: true })
-          .then((stream) => {
-            const peer = new Peer({
-              initiator: true,
-              trickle: false,
-              stream,
-            });
-
-            setupPeer(peer, userId);
-          });
-      }
-    });
-  }, 5000);
-
   useEffect(() => {
-    console.log('triggered');
-
     room.users.forEach((user) => {
       if (user.id === socket.id || usersCalled.includes(user.id)) return;
 
