@@ -64,11 +64,12 @@ const PeersProvider = ({
       });
 
       peer.on('error', (err) => {
-        if (err.cause) console.log(err?.cause);
-        console.log(err.message);
-        console.log(err.name);
-        if (err.stack) console.log(err?.stack);
-        console.log(err, 'err, destroying');
+        const err1 = err as any;
+        console.log(err1?.cause);
+        console.log(err1.message);
+        console.log(err1.name);
+        console.log(err1?.stack);
+        console.log(err1, 'err, destroying');
         console.log(peers[userId]);
       });
 
