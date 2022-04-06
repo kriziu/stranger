@@ -6,7 +6,7 @@ import {
   useRef,
 } from 'react';
 
-import { useInterval, useList, useMap } from 'react-use';
+import { useList, useMap } from 'react-use';
 import Peer from 'simple-peer';
 
 import {
@@ -64,18 +64,29 @@ const PeersProvider = ({
       });
 
       peer.on('error', (err) => {
-        const err1 = err as any;
-        console.log(err1?.cause);
-        console.log(err1.message);
-        console.log(err1.name);
-        console.log(err1?.stack);
-        console.log(err1, 'err, destroying');
-        console.log(peers[userId]);
+        console.log(err.message);
+        peersHandler.remove(userId);
+        streamsHandler.remove(userId);
+
+        if (err.message === 'Connection failed.') {
+          console.log('reconnecting...');
+
+          navigator.mediaDevices
+            .getUserMedia({ video: true, audio: true })
+            .then((stream) => {
+              const newPeer = new Peer({
+                initiator: true,
+                trickle: false,
+                stream,
+              });
+
+              setupPeer(newPeer, userId);
+            });
+        }
       });
 
       peer.on('close', () => {
         console.log('close');
-        console.log(peers[userId]);
       });
 
       let sent = false;
@@ -87,7 +98,7 @@ const PeersProvider = ({
         socket.emit('signal_received', signal, userId);
       });
     },
-    [peers, peersHandler, socket, streamsHandler]
+    [peersHandler, socket, streamsHandler]
   );
 
   useEffect(() => {
