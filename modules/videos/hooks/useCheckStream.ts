@@ -10,12 +10,6 @@ export const useCheckStream = (
 
     const videoTrack = stream.getVideoTracks()[0];
 
-    if (
-      !videoTrack ||
-      !videoTrack.enabled ||
-      videoTrack.readyState === 'ended' ||
-      videoTrack.muted
-    )
-      callback();
+    if (!videoTrack || !videoTrack.enabled || videoTrack.muted) callback();
     else if (elseCallback) elseCallback();
   }, 1000);

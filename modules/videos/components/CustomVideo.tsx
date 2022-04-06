@@ -45,8 +45,6 @@ const CustomVideo = ({
 
   const setFullscreenVideo = useFullscreen();
 
-  const [lastHeight, setLastHeight] = useState(0);
-
   const streams = useStreams();
   const room = useRoom();
   const socket = useSocket();
@@ -76,8 +74,9 @@ const CustomVideo = ({
   if (disabled)
     return (
       <div
-        className={`w-full bg-${colorAssociated}-400 flex items-center justify-center`}
-        style={{ height: lastHeight || '100%' }}
+        className={`w-full bg-${colorAssociated}-400 ${
+          utilityBtns ? 'h-full' : 'h-32'
+        } flex items-center justify-center`}
       >
         <h3 className="px-5 text-center text-2xl font-bold text-black">
           {userName}
@@ -119,7 +118,6 @@ const CustomVideo = ({
 
             video.addEventListener('loadedmetadata', () => {
               video.play().catch(() => {});
-              setLastHeight(video.clientHeight);
             });
           }
         }}

@@ -6,7 +6,7 @@ import {
   useRef,
 } from 'react';
 
-import { useMap } from 'react-use';
+import { useInterval, useList, useMap } from 'react-use';
 import Peer from 'simple-peer';
 
 import {
@@ -40,10 +40,13 @@ const PeersProvider = ({
   const socket = useSocket();
   const room = useRoom();
 
+  const [usersCalled, usersCalledHandler] = useList<string>();
   const [peers, peersHandler] = useMap<Record<string, Peer.Instance>>();
   const [streams, streamsHandler] = useMap<Record<string, MediaStream>>();
 
   const lastUsersLength = useRef(0);
+
+  console.log('peers', peers);
 
   useRoomChange(() => {
     Object.values(peers).forEach((peer) => peer.destroy());
@@ -52,12 +55,13 @@ const PeersProvider = ({
   });
 
   const setupPeer = useCallback(
-    (peer: Peer.Instance, user: UserType) => {
+    (peer: Peer.Instance, userId: string) => {
       console.log('setup');
-      peersHandler.set(user.id, peer);
+      peersHandler.set(userId, peer);
 
       peer.on('stream', (stream) => {
-        streamsHandler.set(user.id, stream);
+        console.log('streaming ', userId);
+        streamsHandler.set(userId, stream);
       });
 
       peer.on('error', (err) => {
@@ -69,26 +73,41 @@ const PeersProvider = ({
         if (sent) return;
         sent = true;
 
-        console.log('signal to send');
-        console.log('my ', socket.id);
-        console.log('to ', user.id);
-        console.log(signal);
-
-        socket.emit('signal_received', signal, user.id);
+        socket.emit('signal_received', signal, userId);
       });
     },
     [peersHandler, socket, streamsHandler]
   );
 
-  useEffect(() => {
-    if (lastUsersLength.current === room.users.length) return;
+  useInterval(() => {
+    Object.keys(peers).forEach((userId) => {
+      if (!peers[userId].connected) {
+        peers[userId].destroy();
+        peersHandler.remove(userId);
+        streamsHandler.remove(userId);
 
+        navigator.mediaDevices
+          .getUserMedia({ video: true, audio: true })
+          .then((stream) => {
+            const peer = new Peer({
+              initiator: true,
+              trickle: false,
+              stream,
+            });
+
+            setupPeer(peer, userId);
+          });
+      }
+    });
+  }, 5000);
+
+  useEffect(() => {
     console.log('triggered');
 
-    console.log(room.users);
-
     room.users.forEach((user) => {
-      if (user.id === socket.id || peersHandler.get(user.id)) return;
+      if (user.id === socket.id || usersCalled.includes(user.id)) return;
+
+      usersCalledHandler.push(user.id);
 
       navigator.mediaDevices
         .getUserMedia({ video: true, audio: true })
@@ -99,9 +118,7 @@ const PeersProvider = ({
             stream,
           });
 
-          console.log(user);
-
-          setupPeer(peer, user);
+          setupPeer(peer, user.id);
         });
     });
 
@@ -109,7 +126,14 @@ const PeersProvider = ({
     return () => {
       lastUsersLength.current = room.users.length;
     };
-  }, [peersHandler, room.users, setupPeer, socket.id]);
+  }, [
+    peersHandler,
+    room.users,
+    setupPeer,
+    socket.id,
+    usersCalled,
+    usersCalledHandler,
+  ]);
 
   useEffect(() => {
     socket.on('user_signal', (userId, signalReceived) => {
@@ -117,7 +141,7 @@ const PeersProvider = ({
     });
 
     const handleUserDisconnected = (user: UserType) => {
-      peersHandler.get(user.id)?.destroy();
+      peers[user.id]?.destroy();
       peersHandler.remove(user.id);
       streamsHandler.remove(user.id);
     };
