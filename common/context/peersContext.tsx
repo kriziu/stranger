@@ -65,6 +65,9 @@ const PeersProvider = ({
 
       peer.on('error', (err) => {
         console.log(err.cause);
+        console.log(err.message);
+        console.log(err.name);
+        console.log(err.stack);
         console.log(err, 'err, destroying');
         console.log(peers[userId]);
       });
