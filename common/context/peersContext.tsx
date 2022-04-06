@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+} from 'react';
 
 import { useMap } from 'react-use';
 import Peer from 'simple-peer';
@@ -12,8 +18,7 @@ import {
 export const peersContext = createContext<{
   peers: Record<string, Peer.Instance>;
   streams: Record<string, MediaStream>;
-  connectedAll: boolean;
-}>({ peers: {}, streams: {}, connectedAll: false });
+}>({ peers: {}, streams: {} });
 
 export const usePeers = () => {
   const { peers } = useContext(peersContext);
@@ -27,12 +32,6 @@ export const useStreams = () => {
   return streams;
 };
 
-export const useCheckConnectedAll = () => {
-  const { connectedAll } = useContext(peersContext);
-
-  return connectedAll;
-};
-
 const PeersProvider = ({
   children,
 }: {
@@ -44,29 +43,50 @@ const PeersProvider = ({
   const [peers, peersHandler] = useMap<Record<string, Peer.Instance>>();
   const [streams, streamsHandler] = useMap<Record<string, MediaStream>>();
 
-  const [peersConnected, setPeersConnected] = useState(0);
-  const [connectedAll, setConnectedAll] = useState(false);
+  const lastUsersLength = useRef(0);
 
   useRoomChange(() => {
     Object.values(peers).forEach((peer) => peer.destroy());
     peersHandler.reset();
     streamsHandler.reset();
-    setConnectedAll(false);
-    setPeersConnected(0);
   });
 
+  const setupPeer = useCallback(
+    (peer: Peer.Instance, user: UserType) => {
+      console.log('setup');
+      peersHandler.set(user.id, peer);
+
+      peer.on('stream', (stream) => {
+        streamsHandler.set(user.id, stream);
+      });
+
+      peer.on('error', (err) => {
+        console.log(err, 'err');
+      });
+
+      let sent = false;
+      peer.on('signal', (signal) => {
+        if (sent) return;
+        sent = true;
+
+        console.log('signal to send');
+        console.log('my ', socket.id);
+        console.log('to ', user.id);
+        console.log(signal);
+
+        socket.emit('signal_received', signal, user.id);
+      });
+    },
+    [peersHandler, socket, streamsHandler]
+  );
+
   useEffect(() => {
-    if (connectedAll || Object.keys(peers).length === 0) return;
+    if (lastUsersLength.current === room.users.length) return;
 
-    console.log(peersConnected);
+    console.log('triggered');
 
-    if (peersConnected === Object.keys(peers).length) {
-      console.log('siuuu');
-      setConnectedAll(true);
-    }
-  }, [connectedAll, peers, peersConnected]);
+    console.log(room.users);
 
-  useEffect(() => {
     room.users.forEach((user) => {
       if (user.id === socket.id || peersHandler.get(user.id)) return;
 
@@ -79,10 +99,17 @@ const PeersProvider = ({
             stream,
           });
 
-          peersHandler.set(user.id, peer);
+          console.log(user);
+
+          setupPeer(peer, user);
         });
     });
-  }, [peers, peersHandler, room, socket.id, streamsHandler]);
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      lastUsersLength.current = room.users.length;
+    };
+  }, [peersHandler, room.users, setupPeer, socket.id]);
 
   useEffect(() => {
     socket.on('user_signal', (userId, signalReceived) => {
@@ -103,40 +130,8 @@ const PeersProvider = ({
     };
   }, [socket, peersHandler, peers, streamsHandler]);
 
-  useEffect(() => {
-    if (!Object.keys(peers).length) return;
-
-    Object.keys(peers).forEach((userId) => {
-      peersHandler.get(userId).on('stream', (stream) => {
-        setPeersConnected((prev) => prev + 1);
-        streamsHandler.set(userId, stream);
-      });
-
-      peersHandler.get(userId).on('error', (err) => {
-        console.log(err, 'err');
-      });
-
-      let sent = false;
-      peersHandler.get(userId).on('signal', (signal) => {
-        console.log('signal to send');
-        if (sent) return;
-        sent = true;
-
-        socket.emit('signal_received', signal, userId);
-      });
-    });
-
-    // eslint-disable-next-line consistent-return
-    return () => {
-      Object.values(peers).forEach((peer) => {
-        peer.removeAllListeners('stream');
-        peer.removeAllListeners('signal');
-      });
-    };
-  }, [peers, peersHandler, socket, streamsHandler]);
-
   return (
-    <peersContext.Provider value={{ peers, streams, connectedAll }}>
+    <peersContext.Provider value={{ peers, streams }}>
       {children}
     </peersContext.Provider>
   );

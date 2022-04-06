@@ -144,7 +144,7 @@ nextApp.prepare().then(async () => {
 
     // CLIENT RECEIVED SIGNAL FROM GOOGLE PEER SERVER
     socket.on('signal_received', (signal, toSocketId) => {
-      console.log('received signal to', socket.id);
+      console.log('received signal from ', socket.id, 'to ', toSocketId);
 
       io.to(toSocketId).emit('user_signal', socket.id, signal);
     });
