@@ -37,7 +37,7 @@ const Message = ({ author, message, base64Url, chatRef }: Props) => {
           <img
             src={base64Url}
             alt={`${author.name} image`}
-            className="w-3/4"
+            className="w-3/4 rounded-xl"
             ref={(img) =>
               img?.addEventListener('load', () => {
                 const node = chatRef.current;
