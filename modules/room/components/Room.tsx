@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import { motion } from 'framer-motion';
-import { BsChevronUp } from 'react-icons/bs';
 import { FaVideo } from 'react-icons/fa';
 import { useBoolean, useMedia } from 'react-use';
 
