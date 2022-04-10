@@ -39,7 +39,7 @@ const CustomVideo = ({
   utilityBtns = false,
   isFullscreen = false,
 }: Props) => {
-  const [disabled, setDisabled] = useState(false);
+  const [, setDisabled] = useState(false);
 
   const { addMovableVideo } = useMovableVideos();
 
@@ -68,22 +68,6 @@ const CustomVideo = ({
     () => setDisabled(true),
     () => setDisabled(false)
   );
-
-  if (disabled && isFullscreen) return null;
-
-  if (disabled)
-    return (
-      <div
-        className={`w-full bg-${colorAssociated}-400 ${
-          utilityBtns ? 'h-full' : 'h-32'
-        } flex items-center justify-center`}
-      >
-        <h3 className="px-5 text-center text-2xl font-bold text-black">
-          {userName}
-        </h3>
-        <AudioComponent stream={stream} />
-      </div>
-    );
 
   return (
     <>
@@ -124,11 +108,13 @@ const CustomVideo = ({
         autoPlay
         playsInline
         muted
-        className={`h-full w-full ${!isFullscreen && 'object-cover'}`}
+        className={`h-full w-full ${
+          !isFullscreen && `object-cover bg-${colorAssociated}-400`
+        }`}
       />
 
       <h3
-        className={`absolute bottom-2 right-2 rounded-lg bg-${colorAssociated}-400 px-1 text-xs text-black`}
+        className={`absolute bottom-2 right-2 rounded-lg bg-${colorAssociated}-400 px-1 text-xs font-normal text-black sm:text-base sm:font-bold`}
       >
         {userName}
       </h3>

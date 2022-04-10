@@ -1,12 +1,6 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
-import { useList, useMap } from 'react-use';
+import { useMap } from 'react-use';
 import Peer from 'simple-peer';
 
 import {
@@ -40,11 +34,16 @@ const PeersProvider = ({
   const socket = useSocket();
   const room = useRoom();
 
-  const [usersCalled, usersCalledHandler] = useList<string>();
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [peers, peersHandler] = useMap<Record<string, Peer.Instance>>();
   const [streams, streamsHandler] = useMap<Record<string, MediaStream>>();
 
-  const lastUsersLength = useRef(0);
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((newStream) => setStream(newStream))
+      .catch(() => {});
+  }, []);
 
   useRoomChange(() => {
     Object.values(peers).forEach((peer) => peer.destroy());
@@ -52,86 +51,50 @@ const PeersProvider = ({
     streamsHandler.reset();
   });
 
-  console.log(peers);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const setupPeer = (userId: string) => {
+    if (!stream) return;
 
-  const setupPeer = useCallback(
-    (peer: Peer.Instance, userId: string) => {
-      console.log('setup ', userId);
-      peersHandler.set(userId, peer);
+    console.log('setup ', userId);
 
-      peer.on('stream', (stream) => {
-        streamsHandler.set(userId, stream);
-      });
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream,
+    });
 
-      peer.on('error', (err) => {
-        console.log(err.message);
+    peersHandler.set(userId, peer);
+
+    peer.on('error', (err) => {
+      if (err.message === 'Connection failed.') {
+        socket.emit('reconnect', userId);
+        console.log('failed');
         peersHandler.remove(userId);
         streamsHandler.remove(userId);
 
-        if (err.message === 'Connection failed.') {
-          console.log('reconnecting...');
+        setupPeer(userId);
+      }
+    });
 
-          navigator.mediaDevices
-            .getUserMedia({ video: true, audio: true })
-            .then((stream) => {
-              const newPeer = new Peer({
-                initiator: true,
-                trickle: false,
-                stream,
-              });
+    peer.on('stream', (streamReceived) => {
+      streamsHandler.set(userId, streamReceived);
+    });
 
-              setupPeer(newPeer, userId);
-            });
-        }
-      });
+    let sent = false;
+    peer.on('signal', (signal) => {
+      if (sent) return;
+      sent = true;
 
-      peer.on('close', () => {
-        console.log('close');
-      });
-
-      let sent = false;
-      peer.on('signal', (signal) => {
-        console.log('signal to', userId);
-        if (sent) return;
-        sent = true;
-
-        socket.emit('signal_received', signal, userId);
-      });
-    },
-    [peersHandler, socket, streamsHandler]
-  );
+      socket.emit('signal_received', signal, userId);
+    });
+  };
 
   useEffect(() => {
     room.users.forEach((user) => {
-      if (user.id === socket.id || usersCalled.includes(user.id)) return;
-
-      usersCalledHandler.push(user.id);
-
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((stream) => {
-          const peer = new Peer({
-            initiator: true,
-            trickle: false,
-            stream,
-          });
-
-          setupPeer(peer, user.id);
-        });
+      if (user.id !== socket.id && !Object.keys(peers).includes(user.id))
+        setupPeer(user.id);
     });
-
-    // eslint-disable-next-line consistent-return
-    return () => {
-      lastUsersLength.current = room.users.length;
-    };
-  }, [
-    peersHandler,
-    room.users,
-    setupPeer,
-    socket.id,
-    usersCalled,
-    usersCalledHandler,
-  ]);
+  }, [peers, room.users, setupPeer, socket.id]);
 
   useEffect(() => {
     socket.on('user_signal', (userId, signalReceived) => {
@@ -145,12 +108,21 @@ const PeersProvider = ({
     };
     socket.on('disconnected', handleUserDisconnected);
 
+    socket.on('user_reconnecting', (userId) => {
+      peers[userId]?.destroy();
+      peersHandler.remove(userId);
+      streamsHandler.remove(userId);
+
+      setupPeer(userId);
+    });
+
     // eslint-disable-next-line consistent-return
     return () => {
       socket.off('user_signal');
       socket.off('disconnected', handleUserDisconnected);
+      socket.off('user_reconnecting');
     };
-  }, [socket, peersHandler, peers, streamsHandler]);
+  }, [socket, peersHandler, peers, streamsHandler, setupPeer]);
 
   return (
     <peersContext.Provider value={{ peers, streams }}>

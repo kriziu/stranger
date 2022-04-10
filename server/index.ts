@@ -142,6 +142,10 @@ nextApp.prepare().then(async () => {
       });
     });
 
+    socket.on('reconnect', (userId) => {
+      socket.to(userId).emit('user_reconnecting', socket.id);
+    });
+
     // CLIENT RECEIVED SIGNAL FROM GOOGLE PEER SERVER
     socket.on('signal_received', (signal, toSocketId) => {
       console.log('received signal from ', socket.id, 'to ', toSocketId);
@@ -205,6 +209,18 @@ nextApp.prepare().then(async () => {
         message,
         author: getUser(socket),
         id,
+      });
+    });
+
+    socket.on('send_img', (base64Url) => {
+      console.log('img');
+      const joinedRoom = getRoomId(socket);
+      const id = uuidv4();
+
+      io.to(joinedRoom).emit('new_img', {
+        author: getUser(socket),
+        id,
+        base64Url,
       });
     });
 

@@ -3,12 +3,10 @@ import { createContext, useContext, useState } from 'react';
 
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { useRoomChange } from '@/common/context/roomContext';
 import { useMyStream } from '@/common/context/streamContext.hooks';
 
 import CustomVideo from '../components/CustomVideo';
 import MovableVideo from '../components/MovableVideo';
-import { useCheckStream } from '../hooks/useCheckStream';
 
 export const fullscreenVideoContext = createContext<{
   setFullscreenVideo: (stream: MediaStream) => void;
@@ -33,10 +31,6 @@ const FullscreenVideoProvider = ({
 
   const myStream = useMyStream();
 
-  useRoomChange(() => setFullscreenStream(null));
-
-  useCheckStream(fullscreenStream, () => setFullscreenStream(null));
-
   const setFullscreenVideo = (stream: MediaStream) => {
     setFullscreenStream(stream);
   };
@@ -47,14 +41,14 @@ const FullscreenVideoProvider = ({
         {fullscreenStream && (
           <motion.div
             key="fullscreen-video"
-            className="absolute h-full w-full bg-black/50 p-24 backdrop-blur-md transition-none"
+            className="absolute h-full w-full bg-black/50 p-2 backdrop-blur-md transition-none sm:p-5 lg:p-24"
             style={{ zIndex: 999 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <button
-              className="btn btn-primary absolute top-16 right-16"
+              className="btn btn-primary absolute top-5 right-5 lg:top-16 lg:right-16"
               style={{ zIndex: 1000 }}
               onClick={() => setFullscreenStream(null)}
             >
@@ -64,6 +58,10 @@ const FullscreenVideoProvider = ({
             {myStream && myStream !== fullscreenStream && (
               <MovableVideo stream={myStream} unremovable />
             )}
+
+            <div className="absolute left-0 top-0 -z-10 flex h-full w-full items-center justify-center">
+              <h3 className="text-2xl font-bold">No video stream</h3>
+            </div>
 
             <CustomVideo stream={fullscreenStream} isFullscreen />
           </motion.div>

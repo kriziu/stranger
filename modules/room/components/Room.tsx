@@ -12,10 +12,8 @@ import RoomInfo from './RoomInfo';
 import RoomUtilities from './RoomUtilities';
 
 const Room = () => {
-  const [opened, setOpened] = useBoolean(false);
   const [videosOpened, setVideosOpened] = useBoolean(true);
 
-  const [topAnimations, setTopAnimations] = useState({});
   const [videosAnimations, setVideosAnimations] = useState({});
 
   const isVerySmall = useMedia('(max-width: 640px)');
@@ -27,14 +25,12 @@ const Room = () => {
   useEffect(() => {
     if (!isVerySmall) {
       setVideosAnimations({ maxHeight: '100%' });
-      setTopAnimations({ height: 'auto' });
     } else {
       setVideosAnimations(
         videosOpened ? { maxHeight: '50%' } : { maxHeight: 0 }
       );
-      setTopAnimations(opened ? { height: 'auto' } : { height: 0 });
     }
-  }, [isVerySmall, opened, videosOpened]);
+  }, [isVerySmall, videosOpened]);
 
   return (
     <div className="flex w-full flex-1 flex-col items-center">
@@ -42,19 +38,9 @@ const Room = () => {
 
       {/* TOP ON MOBILES */}
       <div className="flex w-full flex-col space-y-5 px-5 sm:px-14 lg:hidden">
-        <motion.div
-          className="flex flex-col space-y-5 overflow-hidden pb-2 transition-none"
-          animate={topAnimations}
-        >
+        <div className="flex flex-col space-y-5 overflow-hidden pb-2 transition-none">
           <RoomUtilities />
-        </motion.div>
-        <motion.button
-          className="btn btn-primary block w-max self-center p-2 transition-none sm:hidden"
-          onClick={() => setOpened(!opened)}
-          animate={opened ? { rotate: 0 } : { rotate: 180 }}
-        >
-          <BsChevronUp />
-        </motion.button>
+        </div>
       </div>
 
       <div className="mt-2 flex w-full grow flex-col md:flex-row 2xl:mt-16">
@@ -70,7 +56,7 @@ const Room = () => {
           </div>
 
           <button
-            className="btn btn-primary absolute right-5 bottom-full m-2 w-min p-2 sm:hidden"
+            className="btn btn-primary absolute right-5 bottom-full w-min p-2 sm:hidden"
             onClick={() => setVideosOpened(!videosOpened)}
           >
             <FaVideo />

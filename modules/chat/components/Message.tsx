@@ -1,10 +1,14 @@
-import { useMemo } from 'react';
+import { RefObject, useMemo } from 'react';
 
 import Badge from '@/common/components/Badge/Badge';
 import { useRoom, useSocket } from '@/common/context/roomContext';
 import { getTime } from '@/common/utils/functions';
 
-const Message = ({ author, message }: MessageType) => {
+interface Props extends MessageType {
+  chatRef: RefObject<HTMLDivElement>;
+}
+
+const Message = ({ author, message, base64Url, chatRef }: Props) => {
   const socket = useSocket();
   const mine = socket.id === author.id;
 
@@ -25,7 +29,23 @@ const Message = ({ author, message }: MessageType) => {
         } items-start`}
       >
         <p className="px-1 font-bold text-zinc-500">{time}</p>
-        <p className={`text-zinc-200 ${mine && 'text-right'}`}>{message}</p>
+        {message && (
+          <p className={`text-zinc-200 ${mine && 'text-right'}`}>{message}</p>
+        )}
+
+        {base64Url && (
+          <img
+            src={base64Url}
+            alt={`${author.name} image`}
+            className="w-3/4"
+            ref={(img) =>
+              img?.addEventListener('load', () => {
+                const node = chatRef.current;
+                if (node) node.scrollTo({ top: node.scrollHeight });
+              })
+            }
+          />
+        )}
       </div>
     </div>
   );

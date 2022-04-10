@@ -48,9 +48,6 @@ const StreamsProvider = ({
   });
 
   useEffect(() => {
-    // const interval = setInterval(() => {
-    //   let connected = true;
-
     Object.values(peers).forEach((peer) => {
       const stream = (peer as any).streams[0] as MediaStream;
 
@@ -65,20 +62,8 @@ const StreamsProvider = ({
         if (isAudioStreaming) audioTrackClone.enabled = true;
         else audioTrackClone.enabled = false;
         peer.replaceTrack(stream.getAudioTracks()[0], audioTrackClone, stream);
-
-        // console.log(peer);
-        // console.log(peer.connected);
-
-        // if (!peer.connected) connected = false;
       }
     });
-
-    //   if (connected) clearInterval(interval);
-    // }, 1000);
-
-    return () => {
-      // clearInterval(interval);
-    };
   }, [isAudioStreaming, isScreenStreaming, isVideoStreaming, myStream, peers]);
 
   const handleScreenStreaming = () => {

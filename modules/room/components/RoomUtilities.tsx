@@ -1,3 +1,8 @@
+import { ChangeEvent } from 'react';
+
+import Resizer from 'react-image-file-resizer';
+
+import { useSocket } from '@/common/context/roomContext';
 import { useStreamSetters } from '@/common/context/streamContext.hooks';
 
 const btnClass =
@@ -6,6 +11,8 @@ const btnClass =
 const active = 'bg-green-400 text-black hover:bg-green-500 active:bg-green-400';
 
 const RoomUtilities = () => {
+  const socket = useSocket();
+
   const {
     isScreenStreaming,
     isVideoStreaming,
@@ -14,6 +21,24 @@ const RoomUtilities = () => {
     handleVideoStreaming,
     handleAudioStreaming,
   } = useStreamSetters();
+
+  const handleSendImage = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    Resizer.imageFileResizer(
+      e.target.files[0],
+      800,
+      800,
+      'JPEG',
+      100,
+      0,
+      (uri) => {
+        const base64URL = uri as string;
+
+        socket.emit('send_img', base64URL);
+      }
+    );
+  };
 
   return (
     <div>
@@ -42,7 +67,20 @@ const RoomUtilities = () => {
         >
           Share screen
         </button>
-        <button className={`${btnClass}`}>Send image</button>
+        <label
+          className={`${btnClass} cursor-pointer`}
+          tabIndex={0}
+          htmlFor="select"
+        >
+          Send image
+        </label>
+        <input
+          id="select"
+          type="file"
+          className="hidden"
+          accept="image/*"
+          onChange={handleSendImage}
+        />
       </div>
     </div>
   );

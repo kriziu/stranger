@@ -17,15 +17,19 @@ const Chat = () => {
   useEffect(() => {
     const node = chatRef.current;
 
-    socket.on('new_msg', (message) => {
-      messagesHandler.push(message);
+    const handleNewMsg = (msg: MessageType) => {
+      messagesHandler.push(msg);
       if (node) {
         node.scrollTo({ top: node.scrollHeight });
       }
-    });
+    };
+
+    socket.on('new_msg', handleNewMsg);
+    socket.on('new_img', handleNewMsg);
 
     return () => {
       socket.off('new_msg');
+      socket.off('new_img');
     };
   }, [messagesHandler, socket]);
 
@@ -40,7 +44,7 @@ const Chat = () => {
             Chat beginning
           </div>
           {messages.map((message) => (
-            <Message key={message.id} {...message} />
+            <Message key={message.id} {...message} chatRef={chatRef} />
           ))}
         </div>
         <MessageInput />

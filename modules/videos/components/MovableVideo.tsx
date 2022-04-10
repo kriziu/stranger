@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import { motion } from 'framer-motion';
 import { AiOutlineExpandAlt } from 'react-icons/ai';
@@ -7,7 +7,6 @@ import { MdClose } from 'react-icons/md';
 
 import { useFullscreen } from '../context/fullscreenVideoContext';
 import { useMovableVideos } from '../context/movableVideosContext';
-import { useCheckStream } from '../hooks/useCheckStream';
 import CustomVideo from './CustomVideo';
 
 const MovableVideo = ({
@@ -19,16 +18,8 @@ const MovableVideo = ({
 }) => {
   const ref = useRef(document.body);
 
-  const [disabled, setDisabled] = useState(false);
-
   const { removeMovableVideo } = useMovableVideos();
   const setFullscreenVideo = useFullscreen();
-
-  useCheckStream(
-    stream,
-    () => setDisabled(true),
-    () => setDisabled(false)
-  );
 
   return (
     <motion.div
@@ -51,14 +42,12 @@ const MovableVideo = ({
             <MdClose />
           </button>
 
-          {!disabled && (
-            <button
-              className="btn btn-primary absolute right-2 top-2 z-50 hidden p-2 group-hover:block sm:right-5 sm:top-5"
-              onClick={() => setFullscreenVideo(stream)}
-            >
-              <AiOutlineExpandAlt />
-            </button>
-          )}
+          <button
+            className="btn btn-primary absolute right-2 top-2 z-50 hidden p-2 group-hover:block sm:right-5 sm:top-5"
+            onClick={() => setFullscreenVideo(stream)}
+          >
+            <AiOutlineExpandAlt />
+          </button>
         </>
       )}
 
