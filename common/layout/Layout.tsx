@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 
 import { motion } from 'framer-motion';
 import Head from 'next/head';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import FullscreenVideoProvider from '@/modules/videos/context/fullscreenVideoContext';
 import MovableVideosProvider from '@/modules/videos/context/movableVideosContext';
@@ -65,6 +67,8 @@ const Layout = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
                 <title>Stranger</title>
                 <link rel="icon" href="/favicon.ico" />
               </Head>
+
+              <ToastContainer />
 
               <motion.div
                 className="flex h-full w-full flex-col items-center transition-none"

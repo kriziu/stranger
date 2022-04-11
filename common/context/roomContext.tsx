@@ -8,6 +8,7 @@ import {
 } from 'react';
 
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 import { useBoolean } from 'react-use';
 import io, { Socket } from 'socket.io-client';
 
@@ -85,13 +86,25 @@ const StoreProvider = ({
       router.push(`/${newRoom.id}`);
     });
 
-    socket.on('new_connection', (user) =>
-      setRoom((prev) => ({ ...prev, users: [...prev.users, user] }))
-    );
+    socket.on('new_connection', (user) => {
+      setRoom((prev) => ({ ...prev, users: [...prev.users, user] }));
+      if (user.id !== socket.id)
+        toast(`${user.name} has joined the room`, { theme: 'dark' });
+    });
 
     socket.on('send_check', (roomId) => {
       setIsJoining(true);
       router.push(`/${roomId}`);
+    });
+
+    socket.on('room_not_found', (roomId) => {
+      toast.error(`Room with id ${roomId} not found`, { theme: 'dark' });
+    });
+
+    socket.on('room_max_users', (roomId) => {
+      toast.warn(`Room with id ${roomId} has max users connected to it`, {
+        theme: 'dark',
+      });
     });
 
     const handleUserDisconnected = (user: UserType) => {
@@ -99,6 +112,8 @@ const StoreProvider = ({
         ...prev,
         users: prev.users.filter((arrUser) => arrUser.id !== user.id),
       }));
+      if (user.id !== socket.id)
+        toast(`${user.name} has left the room`, { theme: 'dark' });
     };
     socket.on('disconnected', handleUserDisconnected);
 
@@ -106,6 +121,8 @@ const StoreProvider = ({
       socket.off('join_room');
       socket.off('new_connection');
       socket.off('send_check');
+      socket.off('room_not_found');
+      socket.off('room_max_users');
       socket.off('disconnected', handleUserDisconnected);
     };
   }, [room.id, router, setIsJoining, socket]);

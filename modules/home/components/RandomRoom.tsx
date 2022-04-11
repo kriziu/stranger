@@ -1,6 +1,6 @@
 import { useName, useSocket } from '@/common/context/roomContext';
 
-const RandomChat = ({
+const RandomRoom = ({
   setSearching,
 }: {
   setSearching: (nextValue?: any) => void;
@@ -15,7 +15,7 @@ const RandomChat = ({
 
   return (
     <div className="flex w-72 flex-col items-center">
-      <h3 className="text-3xl font-bold">Random chat</h3>
+      <h3 className="text-3xl font-bold">Random room</h3>
       <p className="-mt-2 mb-2 text-gray-400">Find random people</p>
       <button className="btn btn-primary" onClick={handleSearchRoom}>
         Join
@@ -24,4 +24,4 @@ const RandomChat = ({
   );
 };
 
-export default RandomChat;
+export default RandomRoom;

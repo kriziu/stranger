@@ -55,8 +55,6 @@ const PeersProvider = ({
   const setupPeer = (userId: string) => {
     if (!stream) return;
 
-    console.log('setup ', userId);
-
     const peer = new Peer({
       initiator: true,
       trickle: false,
@@ -68,7 +66,6 @@ const PeersProvider = ({
     peer.on('error', (err) => {
       if (err.message === 'Connection failed.') {
         socket.emit('reconnect', userId);
-        console.log('failed');
         peersHandler.remove(userId);
         streamsHandler.remove(userId);
 

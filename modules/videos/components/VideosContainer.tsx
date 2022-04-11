@@ -1,4 +1,6 @@
+import Dots from '@/common/components/Dots/Dots';
 import { useStreams } from '@/common/context/peersContext';
+import { useRoom } from '@/common/context/roomContext';
 import { useMyStream } from '@/common/context/streamContext.hooks';
 
 import { useMovableVideos } from '../context/movableVideosContext';
@@ -6,6 +8,8 @@ import CustomVideo from './CustomVideo';
 
 const VideosContainer = () => {
   const myStream = useMyStream();
+
+  const room = useRoom();
   const streams = useStreams();
 
   const { isAlreadyMovable, removeMovableVideo } = useMovableVideos();
@@ -16,6 +20,13 @@ const VideosContainer = () => {
     <div
       className={`absolute top-0 left-0 grid h-full w-full grid-cols-3 grid-rows-3 gap-1 p-1 pb-0`}
     >
+      {room.users.length - 1 !== Object.keys(streams).length && (
+        <h6 className="absolute bottom-full left-5 z-10 -mb-2">
+          Connecting with peers
+          <Dots />
+        </h6>
+      )}
+
       {[myStream, ...Object.values(streams)].map((stream) => {
         const isMovable = isAlreadyMovable(stream);
 

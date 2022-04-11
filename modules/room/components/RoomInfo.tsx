@@ -30,20 +30,13 @@ const RoomInfo = () => {
           <h4 className="text-center text-base font-bold text-zinc-400 md:text-xl lg:text-2xl">
             {room.id}
           </h4>
-          <div className="relative">
-            {show && (
-              <div className="absolute bottom-full mb-2 rounded-2xl bg-black px-5 py-3">
-                Copied!
-              </div>
-            )}
 
-            <button
-              className="btn btn-primary h-full px-2 py-1 text-sm"
-              onClick={() => copyToClipboard(room.id)}
-            >
-              Copy
-            </button>
-          </div>
+          <button
+            className="btn btn-primary h-full px-2 py-1 text-sm"
+            onClick={() => copyToClipboard(room.id)}
+          >
+            {show ? 'Copied' : 'Copy'}
+          </button>
         </div>
       )}
     </>

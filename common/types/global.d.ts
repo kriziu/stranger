@@ -10,6 +10,8 @@ export declare global {
     send_check: (roomId: string) => void;
     user_signal: (userId: string, signal: any) => void;
     user_reconnecting: (userId: string) => void;
+    room_not_found: (roomId: string) => void;
+    room_max_users: (roomId: string) => void;
   }
 
   interface ClientToServerEvents {

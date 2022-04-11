@@ -116,7 +116,15 @@ nextApp.prepare().then(async () => {
 
     // JOINING CREATED ROOM WITH ID
     socket.on('join_created', (roomId, name) => {
-      if (!roomsCreated.includes(roomId)) return;
+      if (!roomsCreated.includes(roomId)) {
+        io.to(socket.id).emit('room_not_found', roomId);
+        return;
+      }
+
+      if (io.sockets.adapter.rooms.get(roomId)?.size === 9) {
+        io.to(socket.id).emit('room_max_users', roomId);
+        return;
+      }
 
       socket.data.name = name;
       socket.join(roomId);
@@ -173,7 +181,6 @@ nextApp.prepare().then(async () => {
 
     // CHECKING IF ROOM IS PUBLIC
     socket.on('check_room', (roomId) => {
-      console.log(roomId, 'check');
       if (roomsCreated.includes(roomId)) {
         io.to(socket.id).emit('send_check', roomId);
       }

@@ -1,6 +1,6 @@
 import { useName, useSocket } from '@/common/context/roomContext';
 
-const CreateChat = () => {
+const CreateRoom = () => {
   const socket = useSocket();
   const { name } = useName();
 
@@ -10,9 +10,9 @@ const CreateChat = () => {
 
   return (
     <div className=" flex w-72 flex-col items-center">
-      <h3 className="text-3xl font-bold">Create chat</h3>
+      <h3 className="text-3xl font-bold">Create room</h3>
       <p className="-mt-2 mb-2 w-2/3 text-center leading-5 text-gray-400">
-        Create custom chat and receive id
+        Create custom room and receive id to share
       </p>
       <button className="btn btn-primary" onClick={handleCreateRoom}>
         Create
@@ -21,4 +21,4 @@ const CreateChat = () => {
   );
 };
 
-export default CreateChat;
+export default CreateRoom;

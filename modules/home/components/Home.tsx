@@ -1,12 +1,11 @@
-import { useState } from 'react';
+import { useBoolean } from 'react-use';
 
-import { useBoolean, useInterval } from 'react-use';
-
+import Dots from '@/common/components/Dots/Dots';
 import { useName, useSocket } from '@/common/context/roomContext';
 
-import CreateChat from './CreateChat';
-import JoinChat from './JoinChat';
-import RandomChat from './RandomChat';
+import CreateRoom from './CreateRoom';
+import JoinRoom from './JoinRoom';
+import RandomRoom from './RandomRoom';
 
 const Home = () => {
   const socket = useSocket();
@@ -14,11 +13,6 @@ const Home = () => {
   const { name, setName } = useName();
 
   const [searching, setSearching] = useBoolean(false);
-  const [dots, setDots] = useState(0);
-
-  useInterval(() => {
-    setDots((prev) => (prev === 3 ? 0 : prev + 1));
-  }, 750);
 
   const handleCancelSearch = () => {
     socket.emit('leave_queue');
@@ -29,8 +23,9 @@ const Home = () => {
     <div className="flex flex-col items-center">
       {searching && (
         <div className="mt-10 flex flex-col items-center">
-          <h3 className="text-2xl text-zinc-400">
-            Waiting for other user to connect{'.'.repeat(dots)}
+          <h3 className="px-5 text-center text-2xl text-zinc-400">
+            Waiting for other user to connect
+            <Dots />
           </h3>
           <button
             className="btn btn-secondary mt-3 px-4 font-normal"
@@ -50,11 +45,11 @@ const Home = () => {
             onChange={(e) => setName(e.target.value)}
           />
           <div className="flex w-auto flex-col items-center justify-between space-y-10 sm:w-160 md:flex-row md:items-start md:space-y-0">
-            <RandomChat setSearching={setSearching} />
+            <RandomRoom setSearching={setSearching} />
             <span className="hidden h-96 w-px bg-zinc-600 md:block" />
             <div className="flex flex-col space-y-10">
-              <JoinChat />
-              <CreateChat />
+              <JoinRoom />
+              <CreateRoom />
             </div>
           </div>
         </>
