@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 import { useList } from 'react-use';
 
@@ -8,10 +8,12 @@ import { useRoomChange } from '@/common/context/roomContext';
 import MovableVideo from '../components/MovableVideo';
 
 export const movableVideosContext = createContext<{
+  incrementLastZIndex: () => number;
   isAlreadyMovable: (stream: MediaStream) => boolean;
   addMovableVideo: (stream: MediaStream) => void;
   removeMovableVideo: (stream: MediaStream) => void;
 }>({
+  incrementLastZIndex: () => 0,
   isAlreadyMovable: () => false,
   addMovableVideo: () => {},
   removeMovableVideo: () => {},
@@ -24,12 +26,19 @@ export const useMovableVideos = () => {
   return { isAlreadyMovable, addMovableVideo, removeMovableVideo };
 };
 
+export const useLastZIndex = () => {
+  const { incrementLastZIndex } = useContext(movableVideosContext);
+
+  return { incrementLastZIndex };
+};
+
 const MovableVideosProvider = ({
   children,
 }: {
   children: JSX.Element[] | JSX.Element;
 }) => {
   const [movableVideos, movableVideosHandler] = useList<MediaStream>();
+  const [lastZIndex, setLastZIndex] = useState(0);
 
   useRoomChange(() => {
     movableVideosHandler.reset();
@@ -48,9 +57,20 @@ const MovableVideosProvider = ({
     if (tempIndex > -1) movableVideosHandler.removeAt(tempIndex);
   };
 
+  const incrementLastZIndex = () => {
+    setLastZIndex(lastZIndex + 1);
+
+    return lastZIndex + 1;
+  };
+
   return (
     <movableVideosContext.Provider
-      value={{ isAlreadyMovable, addMovableVideo, removeMovableVideo }}
+      value={{
+        isAlreadyMovable,
+        addMovableVideo,
+        removeMovableVideo,
+        incrementLastZIndex,
+      }}
     >
       {movableVideos.map((stream) => {
         return (

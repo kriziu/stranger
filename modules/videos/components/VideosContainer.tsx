@@ -3,7 +3,10 @@ import { useStreams } from '@/common/context/peersContext';
 import { useRoom } from '@/common/context/roomContext';
 import { useMyStream } from '@/common/context/streamContext.hooks';
 
-import { useMovableVideos } from '../context/movableVideosContext';
+import FullscreenVideoProvider from '../context/fullscreenVideoContext';
+import MovableVideosProvider, {
+  useMovableVideos,
+} from '../context/movableVideosContext';
 import CustomVideo from './CustomVideo';
 
 const VideosContainer = () => {
@@ -54,4 +57,12 @@ const VideosContainer = () => {
   );
 };
 
-export default VideosContainer;
+const WrappedVideosContainer = () => (
+  <FullscreenVideoProvider>
+    <MovableVideosProvider>
+      <VideosContainer />
+    </MovableVideosProvider>
+  </FullscreenVideoProvider>
+);
+
+export default WrappedVideosContainer;

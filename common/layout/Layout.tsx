@@ -6,9 +6,6 @@ import Head from 'next/head';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import FullscreenVideoProvider from '@/modules/videos/context/fullscreenVideoContext';
-import MovableVideosProvider from '@/modules/videos/context/movableVideosContext';
-
 import PeersProvider from '../context/peersContext';
 import StoreProvider from '../context/roomContext';
 import StreamsProvider from '../context/streamContext';
@@ -61,29 +58,25 @@ const Layout = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
     <StoreProvider>
       <PeersProvider>
         <StreamsProvider>
-          <FullscreenVideoProvider>
-            <MovableVideosProvider>
-              <Head>
-                <title>Stranger</title>
-                <link rel="icon" href="/favicon.ico" />
-              </Head>
+          <Head>
+            <title>Stranger</title>
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
 
-              <ToastContainer />
+          <ToastContainer />
 
-              <motion.div
-                className="flex h-full w-full flex-col items-center transition-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <>
-                  <h1 className="mt-3 hidden w-max self-center bg-gradient-to-r from-white to-transparent bg-clip-text text-3xl font-bold uppercase text-transparent sm:block md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-extra">
-                    stranger
-                  </h1>
-                  {children}
-                </>
-              </motion.div>
-            </MovableVideosProvider>
-          </FullscreenVideoProvider>
+          <motion.div
+            className="flex h-full w-full flex-col items-center transition-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <>
+              <h1 className="mt-3 hidden w-max self-center bg-gradient-to-r from-white to-transparent bg-clip-text text-3xl font-bold uppercase text-transparent sm:block md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-extra">
+                stranger
+              </h1>
+              {children}
+            </>
+          </motion.div>
         </StreamsProvider>
       </PeersProvider>
     </StoreProvider>
