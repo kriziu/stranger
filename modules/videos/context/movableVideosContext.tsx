@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useRef } from 'react';
 
 import { useList } from 'react-use';
 
@@ -38,7 +38,7 @@ const MovableVideosProvider = ({
   children: JSX.Element[] | JSX.Element;
 }) => {
   const [movableVideos, movableVideosHandler] = useList<MediaStream>();
-  const [lastZIndex, setLastZIndex] = useState(0);
+  const lastZIndex = useRef(0);
 
   useRoomChange(() => {
     movableVideosHandler.reset();
@@ -58,9 +58,9 @@ const MovableVideosProvider = ({
   };
 
   const incrementLastZIndex = () => {
-    setLastZIndex(lastZIndex + 1);
+    lastZIndex.current += 1;
 
-    return lastZIndex + 1;
+    return lastZIndex.current;
   };
 
   return (
