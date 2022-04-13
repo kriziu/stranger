@@ -6,7 +6,7 @@ An application that connects random people in chat rooms.
 Only 2 users, one is waiting in queue and second one is joining. Then they are connected.
 
 ### Custom room
-User creates room, receive id and share with anybody to join it. Max of 9 users in room. To join this type of room just simply CTRL + V id on home page or paste a link to the browser.
+User creates room, receive id and share with anyone to join it. Max of 9 users in room. To join this type of room just simply CTRL + V id on home page or paste a link to the browser.
 
 ## Features
 
