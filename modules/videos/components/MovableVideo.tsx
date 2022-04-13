@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import { motion } from 'framer-motion';
 import { AiOutlineExpandAlt } from 'react-icons/ai';
@@ -24,8 +24,7 @@ const MovableVideo = ({
   fullScreen?: boolean;
 }) => {
   const ref = useRef(document.body);
-
-  const [zIndex, setZIndex] = useState(10);
+  const videoContainer = useRef<HTMLDivElement>(null);
 
   const { removeMovableVideo } = useMovableVideos();
   const setFullscreenVideo = useFullscreen();
@@ -33,7 +32,14 @@ const MovableVideo = ({
   const { incrementLastZIndex } = useLastZIndex();
 
   const handleMouseDown = () => {
-    setZIndex(incrementLastZIndex());
+    if (fullScreen) return;
+
+    const index = incrementLastZIndex();
+
+    if (videoContainer.current) {
+      console.log(videoContainer.current.style.zIndex);
+      videoContainer.current.style.zIndex = `${index}`;
+    }
   };
 
   return (
@@ -44,10 +50,11 @@ const MovableVideo = ({
         className="group absolute top-20 left-20 w-1/2 cursor-move overflow-hidden rounded-xl transition-none sm:w-1/3 md:w-1/4 lg:w-1/5 2xl:w-1/6"
         onClick={(e) => e.stopPropagation()}
         onMouseDown={handleMouseDown}
-        onTap={handleMouseDown}
+        onTapStart={handleMouseDown}
         dragElastic={0.2}
         dragTransition={{ power: 0.1, timeConstant: 100 }}
-        style={{ zIndex: fullScreen ? 9999 : zIndex }}
+        style={{ zIndex: fullScreen ? 9999 : 5 }}
+        ref={videoContainer}
       >
         {!unremovable && (
           <>
