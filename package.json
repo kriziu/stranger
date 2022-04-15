@@ -1,6 +1,6 @@
 {
-  "name": "tailwind-template",
-  "private": true,
+  "name": "stranger",
+  "private": false,
   "scripts": {
     "dev": "nodemon server/index.ts",
     "dev:client": "ts-node server/index.ts",
